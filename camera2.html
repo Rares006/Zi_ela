@@ -142,17 +142,36 @@
             display: none;
         }
 
+        #tapToStart {
+            position: absolute; inset: 0;
+            border-radius: 20px;
+            border: 2px dashed #f9a8d4;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        #tapToStart:active { background: #fdf2f8; transform: scale(0.98); }
+        .tap-icon { font-size: clamp(2.8rem, 11vw, 4rem); animation: gentleBounce 2s ease-in-out infinite; }
+        .tap-text {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+            font-weight: 700; color: #ec4899; text-align: center; padding: 0 20px;
+        }
+        .tap-sub { font-size: clamp(0.7rem, 2.5vw, 0.82rem); color: #9ca3af; font-weight: 600; }
+
         #info {
             font-family: 'Baloo 2', cursive;
             font-size: clamp(0.85rem, 3.2vw, 1rem);
-            font-weight: 700;
-            color: #9ca3af;
-            text-align: center;
-            padding: 16px;
-            background: white;
-            border-radius: 16px;
-            width: 100%;
-            border: 2px dashed #f9a8d4;
+            font-weight: 700; color: #9ca3af;
+            text-align: center; padding: 16px;
+            background: white; border-radius: 16px;
+            width: 100%; border: 2px dashed #86efac;
+            display: none;
         }
 
         /* Progress */
@@ -238,7 +257,12 @@
             <video id="video" autoplay muted playsinline webkit-playsinline></video>
             <video id="previewVideo" controls playsinline webkit-playsinline></video>
             <img id="previewImage" alt="preview">
-            <div id="info">🎂 Apasă Start și fă o poză cu Ela!</div>
+            <div id="info"></div>
+            <div id="tapToStart">
+                <span class="tap-icon">📸</span>
+                <span class="tap-text">Atinge pentru a porni camera</span>
+                <span class="tap-sub">🎂 Fă o amintire cu Ela!</span>
+            </div>
         </div>
 
         <div class="msg msg-error"   id="errorMessage"></div>
@@ -247,7 +271,7 @@
         <div id="progressContainer"><div id="progressBar">0%</div></div>
 
         <div id="buttonContainer">
-            <button id="startButton">🌟 Start</button>
+            <button id="startButton" style="display:none;">🌟 Start</button>
             <button id="captureButton"    style="display:none;">📷 Capturează</button>
             <button id="recordButton"     style="display:none;">🎥 Înregistrează</button>
             <button id="stopRecordButton" style="display:none;">⏹ Stop</button>
@@ -326,8 +350,8 @@
                 currentStream=stream; video.style.transform='rotateY(180deg)';
                 video.srcObject=stream; video.play(); video.style.display='block';
                 cameraDeschisa=true; startButton.style.display='none';
+                document.getElementById('tapToStart').style.display='none';
                 captureButton.style.display='block'; recordButton.style.display='block'; switchCameraButton.style.display='block';
-                info.textContent='🎉 Fă o poză sau un video drăguț cu Ela!';
             }).catch(()=>showError('Nu s-a putut accesa camera.'));
         }
         function switchCamera() {
@@ -432,8 +456,9 @@
             chunks=[]; cameraDeschisa=false; currentMediaData=null; currentMediaType=null;
             const bc=document.getElementById('buttonContainer'); bc.innerHTML='';
             [startButton,captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>bc.appendChild(b));
-            info.textContent='🎂 Apasă Start și fă o poză cu Ela!'; info.style.display='block';
-            startButton.style.display='block';
+            document.getElementById('tapToStart').style.display='flex';
+            info.style.display='none';
+            startButton.style.display='none';
             [captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>b.style.display='none');
             [previewImage,previewVideo,video].forEach(el=>el.style.display='none');
             progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
@@ -445,11 +470,13 @@
             [previewImage,previewVideo].forEach(el=>el.style.display='none');
             [saveButton,downloadButton,repetatiButton,stopRecordButton].forEach(b=>b.style.display='none');
             [captureButton,recordButton,switchCameraButton].forEach(b=>b.style.display='block');
-            info.style.display='block'; info.textContent='🎉 Fă o poză sau un video drăguț cu Ela!';
+            info.style.display='none';
+            document.getElementById('tapToStart').style.display='none';
             progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
         }
 
         startButton.addEventListener('click', activateCamera);
+        document.getElementById('tapToStart').addEventListener('click', activateCamera);
         captureButton.addEventListener('click', takePicture);
         recordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
