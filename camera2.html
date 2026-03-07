@@ -267,12 +267,12 @@
             apiKey: "AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
             authDomain: "ziua-ela.firebaseapp.com",
             projectId: "ziua-ela",
-            storageBucket: "ziua-ela.firebasestorage.app",
+            storageBucket: "ziua-ela.appspot.com",
             messagingSenderId: "180855324306",
             appId: "1:180855324306:web:bb5f4aeabb1ca1847e304b"
         };
         let firebaseApp, storage, auth, isAuthenticated = false;
-        try { firebaseApp = firebase.initializeApp(firebaseConfig); storage = firebase.storage(); auth = firebase.auth(); } catch(e) {}
+        firebaseApp = firebase.initializeApp(firebaseConfig); storage = firebase.storage(); auth = firebase.auth();
 
         let mediaRecorder, chunks = [], useFrontCamera = true, currentStream = null;
         let currentMediaType = null, currentMediaData = null, cameraDeschisa = false;
