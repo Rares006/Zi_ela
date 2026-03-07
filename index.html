@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎂 Un Anișor de Amintiri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --pink: #f9a8d4;
+            --pink-dark: #ec4899;
+            --peach: #fcd5b0;
+            --mint: #bbf7d0;
+            --mint-dark: #4ade80;
+            --lavender: #ddd6fe;
+            --yellow: #fef08a;
+            --cream: #fffbeb;
+            --brown: #92400e;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #fff8f0;
+            position: relative;
+        }
+
+        /* Animated pastel background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, #fce7f3 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 10%, #e0f2fe 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, #dcfce7 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 70%, #fef9c3 0%, transparent 50%);
+            background-color: #fff8f0;
+            z-index: 0;
+        }
+
+        /* Floating bubbles */
+        .bubbles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Stars/confetti */
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            animation: confettiFall linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5) translateY(-50px); opacity: 0; }
+            60% { transform: scale(1.1) translateY(5px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .birthday-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--pink), var(--peach));
+            color: white;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 15px rgba(249,168,212,0.5);
+        }
+
+        .main-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #f472b6, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientFlow 4s ease infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Animals row decoration */
+        .animals-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: -10px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .animal-deco {
+            width: clamp(60px, 10vw, 90px);
+            height: clamp(60px, 10vw, 90px);
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: gentleBounce ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .animal-deco:hover {
+            transform: scale(1.2) translateY(-8px) !important;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 700px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+
+        .card {
+            position: relative;
+            border-radius: 28px;
+            padding: 36px 28px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card-camera {
+            background: linear-gradient(145deg, #fce7f3, #fbcfe8, #fdf2f8);
+            border: 2px solid #f9a8d4;
+            box-shadow: 0 8px 30px rgba(249,168,212,0.3);
+        }
+
+        .card-gallery {
+            background: linear-gradient(145deg, #dcfce7, #bbf7d0, #f0fdf4);
+            border: 2px solid #86efac;
+            box-shadow: 0 8px 30px rgba(134,239,172,0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-12px) scale(1.03);
+        }
+
+        .card-camera:hover {
+            box-shadow: 0 20px 50px rgba(249,168,212,0.5);
+        }
+
+        .card-gallery:hover {
+            box-shadow: 0 20px 50px rgba(134,239,172,0.5);
+        }
+
+        .card-animal {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+            margin-bottom: 16px;
+            animation: gentleBounce ease-in-out infinite;
+        }
+
+        .card-camera .card-animal { animation-duration: 2.5s; }
+        .card-gallery .card-animal { animation-duration: 3s; animation-delay: 0.5s; }
+
+        .card-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+
+        .card-camera .card-title { color: #be185d; }
+        .card-gallery .card-title { color: #15803d; }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-camera .card-btn {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244,114,182,0.4);
+        }
+
+        .card-gallery .card-btn {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74,222,128,0.4);
+        }
+
+        .card:hover .card-btn {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Decorative ribbon */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .card-camera::before { background: #ec4899; }
+        .card-gallery::before { background: #22c55e; }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .footer-animals {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-animal {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            animation: gentleBounce ease-in-out infinite;
+        }
+
+        .footer-text {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1rem;
+            color: #d1fae5;
+            font-weight: 600;
+        }
+
+        .footer-sub {
+            font-size: 0.8rem;
+            color: rgba(209,250,229,0.6);
+            margin-top: 4px;
+        }
+
+        /* Cake decoration at top */
+        .top-decoration {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: wobble 2s ease-in-out infinite;
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* Stars scattered */
+        .star {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.2rem;
+            animation: twinkle ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        @media (max-width: 600px) {
+            .cards { grid-template-columns: 1fr; max-width: 380px; }
+            .animals-row { gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Fixed stars -->
+    <div class="star" style="top:8%;left:5%;animation-duration:2.1s;animation-delay:0s;">⭐</div>
+    <div class="star" style="top:15%;right:8%;animation-duration:1.8s;animation-delay:0.5s;">✨</div>
+    <div class="star" style="top:45%;left:3%;animation-duration:2.4s;animation-delay:1s;">🌟</div>
+    <div class="star" style="bottom:20%;right:5%;animation-duration:1.9s;animation-delay:0.3s;">⭐</div>
+    <div class="star" style="bottom:35%;left:7%;animation-duration:2.2s;animation-delay:0.8s;">✨</div>
+    <div class="star" style="top:70%;right:3%;animation-duration:2s;animation-delay:1.2s;">🌟</div>
+
+    <div class="container">
+        <header class="header">
+            <div class="top-decoration">🎂</div>
+            <div class="birthday-badge">🎉 Prima Aniversare 🎉</div>
+            <h1 class="main-title">Un Anișor<br>de Amintiri</h1>
+            <p class="subtitle">Capturează magia primului an de viață</p>
+        </header>
+
+        <!-- Decorative animals row -->
+        <div class="animals-row">
+            <img src="61e5c12ab99c4121bc689a092b484377.png" class="animal-deco" style="animation-duration:2.2s;" alt="owl">
+            <img src="8253a088326648ce812d2e44ced702d3.png" class="animal-deco" style="animation-duration:2.5s;animation-delay:0.3s;" alt="bunny">
+            <img src="d3f58b6ab357400b8ad1885dfd0e2900.png" class="animal-deco" style="animation-duration:2s;animation-delay:0.6s;" alt="squirrel">
+            <img src="b55915826b094735b732c1481db7e05a.png" class="animal-deco" style="animation-duration:2.7s;animation-delay:0.2s;" alt="fox">
+            <img src="3e637e7ae1e149e38b77fcd5dc61ca5b.png" class="animal-deco" style="animation-duration:2.3s;animation-delay:0.5s;" alt="bear">
+        </div>
+
+        <!-- Navigation cards -->
+        <main class="cards">
+            <a href="camera2.html" class="card card-camera">
+                <img src="64921c0f9b1b443fa621ad8bd47c8949.png" class="card-animal" alt="deer">
+                <h2 class="card-title">📸 Cameră Foto</h2>
+                <p class="card-desc">Fă poze și filmulețe cu bebelușul tău la ziua lui specială!</p>
+                <span class="card-btn">Hai să fotografiem! →</span>
+            </a>
+
+            <a href="gallery.html" class="card card-gallery">
+                <img src="fbf06e1aed144ac59dfdca9a3d79e6d4.png" class="card-animal" alt="hedgehog">
+                <h2 class="card-title">🖼️ Album Amintiri</h2>
+                <p class="card-desc">Privește toate momentele drăguțe salvate din prima zi de viață!</p>
+                <span class="card-btn">Vezi albumul! →</span>
+            </a>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-animals">
+                <img src="2a2a47c3043b4c5fa935380042c91e17.png" class="footer-animal" style="animation-duration:2.1s;" alt="">
+                <img src="65189b1895f147fa9dd1a1665ad10f48.png" class="footer-animal" style="animation-duration:2.6s;animation-delay:0.4s;" alt="">
+                <img src="05d4c5cf73e54da8baae24bb68af598b.png" class="footer-animal" style="animation-duration:2.3s;animation-delay:0.2s;" alt="">
+                <img src="e80ac0efd3694110b0d17228cd6d5ef3.png" class="footer-animal" style="animation-duration:1.9s;animation-delay:0.6s;" alt="">
+            </div>
+            <p class="footer-text">🎀 Cu dragoste, pentru ziua ta specială 🎀</p>
+            <p class="footer-sub">© 2025 Un an de poveste</p>
+        </footer>
+    </div>
+
+    <script>
+        // Create floating bubbles
+        const bubbleContainer = document.getElementById('bubbles');
+        const colors = ['#fce7f3','#dcfce7','#dbeafe','#fef9c3','#ede9fe','#ffedd5'];
+        
+        for (let i = 0; i < 18; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 50 + 15;
+            bubble.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                left: ${Math.random() * 100}%;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                animation-duration: ${Math.random() * 8 + 6}s;
+                animation-delay: ${Math.random() * 8}s;
+            `;
+            bubbleContainer.appendChild(bubble);
+        }
+
+        // Confetti
+        const confettiColors = ['#f472b6','#fb923c','#facc15','#4ade80','#60a5fa','#c084fc','#f87171'];
+        for (let i = 0; i < 25; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti-piece';
+            c.style.cssText = `
+                left: ${Math.random() * 100}%;
+                background: ${confettiColors[Math.floor(Math.random() * confettiColors.length)]};
+                animation-duration: ${Math.random() * 5 + 4}s;
+                animation-delay: ${Math.random() * 6}s;
+                width: ${Math.random() * 8 + 4}px;
+                height: ${Math.random() * 8 + 4}px;
+                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                position: fixed;
+                top: -20px;
+                opacity: 0.7;
+            `;
+            document.body.appendChild(c);
+        }
+
+        // Card navigation
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => { window.location.href = this.href; }, 200);
+            });
+        });
+
+        // Prevent zoom on double tap
+        let lastTouch = 0;
+        document.addEventListener('touchend', e => {
+            const now = Date.now();
+            if (now - lastTouch <= 300) e.preventDefault();
+            lastTouch = now;
+        }, false);
+    </script>
+</body>
+</html>
