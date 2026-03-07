@@ -3,639 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🖼️ Album cu Amintiri</title>
+    <title>🖼️ Amintiri cu Ela</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
             font-family: 'Quicksand', sans-serif;
-            min-height: 100vh;
             background: #fff8f0;
-            position: relative;
-            overflow-x: hidden;
         }
 
         .bg-gradient {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background:
                 radial-gradient(ellipse at 5% 15%, #dcfce7 0%, transparent 45%),
-                radial-gradient(ellipse at 95% 5%, #fce7f3 0%, transparent 45%),
-                radial-gradient(ellipse at 50% 90%, #dbeafe 0%, transparent 40%);
+                radial-gradient(ellipse at 95% 5%, #fce7f3 0%, transparent 45%);
             background-color: #fff8f0;
             z-index: 0;
         }
 
-        /* Back button */
-        .back-button {
-            position: fixed;
-            top: 18px;
-            left: 18px;
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-decoration: none;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(34,197,94,0.35);
-            transition: all 0.3s ease;
+        /* Stickers */
+        .sticker {
+            position: fixed; pointer-events: none; z-index: 1;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.08));
+            animation: stickerFloat ease-in-out infinite;
+        }
+        @keyframes stickerFloat {
+            0%,100% { transform: translateY(0) rotate(var(--rot)); }
+            50%      { transform: translateY(-7px) rotate(var(--rot)); }
         }
 
-        .back-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,0.45); }
+        /* Top bar */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 14px;
+            z-index: 50;
+        }
+        .back-button {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white; padding: 8px 16px;
+            border-radius: 50px;
+            font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.85rem;
+            text-decoration: none;
+            box-shadow: 0 3px 10px rgba(34,197,94,0.35);
+        }
 
-        .page-content {
-            position: relative;
-            z-index: 2;
-            padding: 90px 20px 60px;
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
+        /* Main screen — fills viewport, no scroll */
+        .screen {
+            position: relative; z-index: 2;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
             align-items: center;
+            padding: 64px 14px 12px;
         }
 
         /* Header */
         .page-header {
-            text-align: center;
-            margin-bottom: 32px;
-            animation: bounceIn 0.7s ease-out;
+            text-align: center; margin-bottom: 10px;
+            animation: bounceIn 0.6s ease-out;
+            flex-shrink: 0;
         }
-
         @keyframes bounceIn {
             0% { transform: scale(0.7); opacity: 0; }
-            70% { transform: scale(1.07); }
+            70% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
-
         .header-animals {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 6px;
-            margin-bottom: 10px;
+            display: flex; justify-content: center; align-items: flex-end; gap: 6px;
+            margin-bottom: 4px;
         }
-
         .header-animals img {
-            height: 70px;
+            height: clamp(36px, 9vw, 52px);
             object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.08));
             animation: gentleBounce ease-in-out infinite;
         }
-
-        @keyframes gentleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
+        @keyframes gentleBounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }
         h1 {
             font-family: 'Baloo 2', cursive;
-            font-size: clamp(2rem, 6vw, 3rem);
-            font-weight: 800;
-            color: #15803d;
-            margin-bottom: 6px;
+            font-size: clamp(1.3rem, 5.5vw, 1.9rem);
+            font-weight: 800; color: #15803d;
         }
-
-        .header-sub {
-            color: #9ca3af;
-            font-size: 1rem;
-            font-weight: 500;
-        }
+        .header-sub { font-size: clamp(0.7rem, 2.5vw, 0.85rem); color: #9ca3af; margin-top: 2px; }
 
         /* Filter buttons */
-        .gallery-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            justify-content: center;
+        .filter-row {
+            display: flex; gap: 8px; margin-bottom: 10px;
+            flex-shrink: 0;
         }
-
         .filter-button {
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            font-size: 0.9rem;
-            padding: 9px 22px;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-            background: white;
-            color: #9ca3af;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            font-family: 'Baloo 2', cursive; font-weight: 700;
+            font-size: clamp(0.72rem, 2.5vw, 0.85rem);
+            padding: 7px 16px; border-radius: 50px; border: none; cursor: pointer;
+            background: white; color: #9ca3af;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+        }
+        .filter-button.active {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white; box-shadow: 0 3px 12px rgba(74,222,128,0.4);
         }
 
-        .filter-button:hover { transform: translateY(-2px); }
-        .filter-button.active { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; box-shadow: 0 4px 15px rgba(74,222,128,0.4); }
-
-        /* Loading */
-        .loading-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            margin: 60px 0;
-            color: #9ca3af;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.1rem;
+        /* Error */
+        .error-msg {
+            color: #ef4444; font-size: 0.82rem; font-weight: 600;
+            padding: 7px 14px; background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 12px; margin-bottom: 8px; display: none;
+            flex-shrink: 0; width: 100%; text-align: center;
         }
 
-        .loading-spinner {
-            width: 44px;
-            height: 44px;
-            border: 4px solid #f3f4f6;
-            border-top: 4px solid #4ade80;
-            border-right: 4px solid #f472b6;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        /* Gallery grid — scrollable area in the middle */
+        .gallery-wrapper {
+            flex: 1; width: 100%; min-height: 0;
+            overflow-y: auto; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
+        .gallery-wrapper::-webkit-scrollbar { display: none; }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Gallery grid */
         .gallery-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 18px;
-            width: 100%;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 4px 2px 8px;
         }
 
         .gallery-item {
-            border-radius: 22px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-            aspect-ratio: 1;
-            position: relative;
+            border-radius: 14px; overflow: hidden; cursor: pointer;
+            aspect-ratio: 1; position: relative;
             background: white;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
             border: 2px solid transparent;
-        }
-
-        .gallery-item:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: #f9a8d4;
-            box-shadow: 0 16px 40px rgba(249,168,212,0.35);
-        }
-
-        .gallery-item:active { transform: scale(0.97); }
-
-        .media-container { width: 100%; height: 100%; position: relative; overflow: hidden; }
-
-        .gallery-item img, .gallery-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .gallery-item:hover img, .gallery-item:hover video { transform: scale(1.07); }
-
-        .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 52px;
-            height: 52px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-        }
-
-        .play-button:hover { transform: translate(-50%, -50%) scale(1.15); }
-        .play-button::before { content: '▶'; margin-left: 3px; }
-
-        .item-info {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 8px 10px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.55));
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .item-type {
-            font-size: 0.65rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Empty state */
-        .empty-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            margin: 60px 0;
-            text-align: center;
-        }
-
-        .empty-animals {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .empty-animals img { height: 80px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); animation: gentleBounce ease-in-out infinite; }
-
-        .empty-text {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #9ca3af;
-        }
-
-        .add-button {
-            background: linear-gradient(135deg, #f472b6, #ec4899);
-            color: white;
-            padding: 14px 32px;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(244,114,182,0.4);
             transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
         }
+        .gallery-item:active { transform: scale(0.95); border-color: #f9a8d4; }
 
-        .add-button:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 10px 28px rgba(244,114,182,0.5); }
+        .media-container { width:100%; height:100%; position:relative; overflow:hidden; }
+        .gallery-item img, .gallery-item video {
+            width:100%; height:100%; object-fit:cover;
+        }
+        .play-overlay {
+            position:absolute; inset:0;
+            display:flex; align-items:center; justify-content:center;
+            background: rgba(0,0,0,0.15);
+        }
+        .play-btn {
+            width:36px; height:36px;
+            background:rgba(255,255,255,0.9);
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+        }
+        .play-btn::before { content:'▶'; margin-left:2px; }
 
-        .error-message {
-            color: #ef4444;
-            font-size: 0.9rem;
-            padding: 10px 16px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 14px;
-            margin-bottom: 16px;
-            display: none;
-            text-align: center;
-            font-weight: 600;
+        .item-type-badge {
+            position:absolute; top:5px; right:5px;
+            background:rgba(0,0,0,0.45);
+            color:white; font-size:0.6rem; font-weight:700;
+            padding:2px 6px; border-radius:20px;
+            text-transform:uppercase; letter-spacing:0.5px;
         }
 
-        /* Placeholder */
-        .placeholder {
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, #fce7f3, #dcfce7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            font-size: 2.5rem;
+        /* Loading */
+        .loading-msg {
+            flex:1; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:12px;
+            color:#9ca3af; font-family:'Baloo 2',cursive; font-size:1rem;
         }
+        .spinner {
+            width:38px; height:38px;
+            border:4px solid #f3f4f6;
+            border-top:4px solid #4ade80;
+            border-right:4px solid #f472b6;
+            border-radius:50%; animation:spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100%{transform:rotate(360deg);} }
+
+        /* Empty */
+        .empty-msg {
+            flex:1; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:12px;
+            text-align:center;
+        }
+        .empty-animals { display:flex; gap:8px; }
+        .empty-animals img { height:clamp(55px,15vw,75px); object-fit:contain; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.08)); animation:gentleBounce ease-in-out infinite; }
+        .empty-text { font-family:'Baloo 2',cursive; font-size:1rem; font-weight:700; color:#9ca3af; }
+        .add-btn {
+            background:linear-gradient(135deg,#f472b6,#ec4899);
+            color:white; padding:12px 26px;
+            border:none; border-radius:50px;
+            font-family:'Baloo 2',cursive; font-weight:800; font-size:1rem;
+            cursor:pointer;
+            box-shadow:0 5px 16px rgba(244,114,182,0.4);
+            transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .add-btn:active { transform:scale(0.95); }
 
         /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.92);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.93);
+            z-index:2000; flex-direction:column;
+            align-items:center; justify-content:center;
+            padding:14px;
         }
-
         .modal-content {
-            max-width: 90%;
-            max-height: 78%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            max-width:100%; max-height:78vh;
+            display:flex; align-items:center; justify-content:center;
+            animation:popIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
         }
-
-        @keyframes popIn {
-            from { transform: scale(0.7); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
+        @keyframes popIn { from{transform:scale(0.7);opacity:0;} to{transform:scale(1);opacity:1;} }
         .modal-content img, .modal-content video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 18px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width:100%; max-height:100%;
+            object-fit:contain; border-radius:16px;
+            box-shadow:0 16px 50px rgba(0,0,0,0.4);
         }
-
-        .close-button {
-            position: absolute;
-            top: 16px; right: 16px;
-            width: 52px; height: 52px;
-            background: rgba(255,255,255,0.15);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.4rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 2001;
-        }
-
-        .close-button:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg) scale(1.1); }
-
-        .nav-button {
-            position: absolute;
-            top: 50%; transform: translateY(-50%);
-            width: 52px; height: 52px;
-            background: rgba(255,255,255,0.15);
-            border: none; border-radius: 50%;
-            color: white; font-size: 1.4rem;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease; z-index: 2001;
-        }
-
-        .nav-button:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
-        .nav-button:disabled { opacity: 0.25; cursor: not-allowed; }
-        .nav-button:disabled:hover { transform: translateY(-50%); background: rgba(255,255,255,0.15); }
-        .prev-button { left: 16px; }
-        .next-button { right: 16px; }
-
         .modal-counter {
-            position: absolute;
-            top: 16px; left: 16px;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-size: 0.9rem;
-            font-weight: 700;
-            z-index: 2001;
+            position:absolute; top:14px; left:14px;
+            background:rgba(255,255,255,0.15); color:white;
+            padding:6px 14px; border-radius:50px;
+            font-family:'Baloo 2',cursive; font-size:0.85rem; font-weight:700;
+            z-index:2001;
         }
-
-        /* Decorative animals fixed */
-        .fixed-animal {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.55;
+        .close-btn {
+            position:absolute; top:14px; right:14px;
+            width:46px; height:46px;
+            background:rgba(255,255,255,0.15); border:none;
+            border-radius:50%; color:white; font-size:1.2rem;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            z-index:2001; transition:all 0.3s ease;
         }
+        .close-btn:active { background:rgba(255,255,255,0.3); transform:scale(0.9); }
+        .nav-btn {
+            position:absolute; top:50%; transform:translateY(-50%);
+            width:46px; height:46px;
+            background:rgba(255,255,255,0.15); border:none;
+            border-radius:50%; color:white; font-size:1.3rem;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            z-index:2001; transition:all 0.3s ease;
+        }
+        .nav-btn:active { background:rgba(255,255,255,0.3); }
+        .nav-btn:disabled { opacity:0.2; }
+        .prev-btn { left:14px; }
+        .next-btn { right:14px; }
 
-        .fa-br { bottom: 10%; right: 2%; width: 80px; animation: gentleBounce 2.8s ease-in-out infinite; }
-        .fa-bl { bottom: 18%; left: 2%; width: 65px; animation: gentleBounce 3.2s ease-in-out infinite 0.5s; }
-
-        @media (max-width: 600px) {
-            .gallery-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            h1 { font-size: 1.8rem; }
+        .placeholder {
+            width:100%; height:100%;
+            background:linear-gradient(135deg,#fce7f3,#dcfce7);
+            display:flex; align-items:center; justify-content:center;
+            font-size:2rem;
         }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
 
-    <!-- Fixed decorative animals -->
-    <img src="3e637e7ae1e149e38b77fcd5dc61ca5b.png" class="fixed-animal fa-br" alt="">
-    <img src="61e5c12ab99c4121bc689a092b484377.png" class="fixed-animal fa-bl" alt="">
+    <!-- Stickers -->
+    <img src="61e5c12a-b99c-4121-bc68-9a092b484377.png" class="sticker" style="width:46px;top:7%;left:4%;--rot:-18deg;animation-duration:3.2s;opacity:0.32;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:50px;top:5%;right:4%;--rot:22deg;animation-duration:2.8s;animation-delay:0.5s;opacity:0.32;">
+    <img src="3e637e7a-e1e1-49e3-8b77-fcd5dc61ca5b.png" class="sticker" style="width:44px;bottom:14%;left:2%;--rot:28deg;animation-duration:3.5s;animation-delay:1s;opacity:0.3;">
+    <img src="e80ac0ef-d369-4110-b0d1-7228cd6d5ef3.png" class="sticker" style="width:48px;bottom:10%;right:2%;--rot:-22deg;animation-duration:3s;animation-delay:0.3s;opacity:0.3;">
 
-    <a href="index.html" class="back-button">← Înapoi</a>
+    <div class="top-bar">
+        <a href="index.html" class="back-button">← Înapoi</a>
+    </div>
 
-    <div class="page-content">
-        <header class="page-header">
+    <div class="screen">
+
+        <div class="page-header">
             <div class="header-animals">
-                <img src="8253a088326648ce812d2e44ced702d3.png" style="animation-duration:2.2s;" alt="">
-                <img src="fbf06e1aed144ac59dfdca9a3d79e6d4.png" style="animation-duration:2.7s;animation-delay:0.4s;" alt="">
-                <img src="b55915826b094735b732c1481db7e05a.png" style="animation-duration:2.4s;animation-delay:0.2s;" alt="">
+                <img src="8253a088-3266-48ce-812d-2e44ced702d3.png" style="animation-duration:2.2s;" alt="">
+                <img src="fbf06e1a-ed14-4ac5-9dfd-ca9a3d79e6d4.png" style="animation-duration:2.7s;animation-delay:0.3s;" alt="">
+                <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" style="animation-duration:2.4s;animation-delay:0.6s;" alt="">
             </div>
-            <h1>🎀 Album cu Amintiri</h1>
-            <p class="header-sub">Toate momentele drăguțe din primul an</p>
-        </header>
-
-        <div class="gallery-controls">
-            <button class="filter-button active" data-filter="all">🌟 Toate</button>
-            <button class="filter-button" data-filter="image">📷 Poze</button>
-            <button class="filter-button" data-filter="video">🎥 Video-uri</button>
+            <h1>🎀 Amintiri cu Ela</h1>
+            <p class="header-sub">Primul anișor în poze și video</p>
         </div>
 
-        <div id="errorMessage" class="error-message"></div>
+        <div class="filter-row">
+            <button class="filter-button active" data-filter="all">🌟 Toate</button>
+            <button class="filter-button" data-filter="image">📷 Poze</button>
+            <button class="filter-button" data-filter="video">🎥 Video</button>
+        </div>
 
-        <div id="loadingMessage" class="loading-message">
-            <div class="loading-spinner"></div>
+        <div class="error-msg" id="errorMessage"></div>
+
+        <div id="loadingMessage" class="loading-msg">
+            <div class="spinner"></div>
             <p>Se încarcă amintirile... 🎂</p>
         </div>
 
-        <div id="galleryContainer" class="gallery-container" style="display:none;"></div>
+        <div class="gallery-wrapper" id="galleryWrapper" style="display:none;">
+            <div class="gallery-container" id="galleryContainer"></div>
+        </div>
 
         <div id="emptyMessage" style="display:none;">
-            <div class="empty-message">
+            <div class="empty-msg">
                 <div class="empty-animals">
-                    <img src="d3f58b6ab357400b8ad1885dfd0e2900.png" style="animation-duration:2.3s;" alt="">
-                    <img src="65189b1895f147fa9dd1a1665ad10f48.png" style="animation-duration:2.8s;animation-delay:0.3s;" alt="">
+                    <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" style="animation-duration:2.3s;" alt="">
+                    <img src="65189b18-95f1-47fa-9dd1-a1665ad10f48.png" style="animation-duration:2.8s;animation-delay:0.3s;" alt="">
                 </div>
-                <p class="empty-text">🐾 Nu ai încă amintiri salvate!</p>
-                <button class="add-button" onclick="window.location.href='camera2.html'">📸 Creează prima amintire!</button>
+                <p class="empty-text">🐾 Nu sunt încă amintiri cu Ela!</p>
+                <button class="add-btn" onclick="window.location.href='camera2.html'">📸 Fă prima poză cu Ela!</button>
             </div>
         </div>
+
     </div>
 
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-counter" id="modalCounter">1 / 1</div>
-        <button class="close-button" id="closeButton">✕</button>
-        <button class="nav-button prev-button" id="prevButton">‹</button>
-        <button class="nav-button next-button" id="nextButton">›</button>
+        <button class="close-btn" id="closeBtn">✕</button>
+        <button class="nav-btn prev-btn" id="prevBtn">‹</button>
+        <button class="nav-btn next-btn" id="nextBtn">›</button>
         <div class="modal-content" id="modalContent"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
-
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCvzcH5QQfkJ2JDXcfPJCHo6n6iLjnEIAU",
-            authDomain: "clasa12a-a33d6.firebaseapp.com",
-            projectId: "clasa12a-a33d6",
-            storageBucket: "clasa12a-a33d6.firebasestorage.app",
-            messagingSenderId: "191239598512",
-            appId: "1:191239598512:web:333e9ef65eba04fa0be675",
-            measurementId: "G-JSTGC7K2ZZ"
+            apiKey:"AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
+            authDomain:"ziua-ela.firebaseapp.com",
+            projectId:"ziua-ela",
+            storageBucket:"ziua-ela.firebasestorage.app",
+            messagingSenderId:"180855324306",
+            appId:"1:180855324306:web:bb5f4aeabb1ca1847e304b"
         };
+        let firebaseApp, storage, auth, isAuthenticated=false;
+        try{firebaseApp=firebase.initializeApp(firebaseConfig);storage=firebase.storage();auth=firebase.auth();}catch(e){}
 
-        let firebaseApp, storage, auth, isAuthenticated = false;
-        try { firebaseApp = firebase.initializeApp(firebaseConfig); storage = firebase.storage(); auth = firebase.auth(); } catch {}
+        let allMemories=[], filteredMemories=[], currentFilter='all', currentModalIndex=0;
 
-        let allMemories = [], filteredMemories = [], currentFilter = 'all', currentModalIndex = 0;
-
+        const galleryWrapper   = document.getElementById('galleryWrapper');
         const galleryContainer = document.getElementById('galleryContainer');
-        const emptyMessage = document.getElementById('emptyMessage');
-        const loadingMessage = document.getElementById('loadingMessage');
-        const errorMessage = document.getElementById('errorMessage');
-        const modal = document.getElementById('modal');
-        const modalContent = document.getElementById('modalContent');
-        const modalCounter = document.getElementById('modalCounter');
-        const closeButton = document.getElementById('closeButton');
-        const prevButton = document.getElementById('prevButton');
-        const nextButton = document.getElementById('nextButton');
-        const filterButtons = document.querySelectorAll('.filter-button');
+        const emptyMessage     = document.getElementById('emptyMessage');
+        const loadingMessage   = document.getElementById('loadingMessage');
+        const errorMsg         = document.getElementById('errorMessage');
+        const modal            = document.getElementById('modal');
+        const modalContent     = document.getElementById('modalContent');
+        const modalCounter     = document.getElementById('modalCounter');
+        const closeBtn         = document.getElementById('closeBtn');
+        const prevBtn          = document.getElementById('prevBtn');
+        const nextBtn          = document.getElementById('nextBtn');
 
-        function showError(msg) {
-            errorMessage.textContent = msg; errorMessage.style.display = 'block';
-            setTimeout(() => errorMessage.style.display = 'none', 5000);
-        }
+        function showError(m){errorMsg.textContent=m;errorMsg.style.display='block';setTimeout(()=>errorMsg.style.display='none',5000);}
 
-        function formatDate(d) {
-            return new Date(d).toLocaleDateString('ro-RO', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
-        }
+        async function signInAnonymously(){const c=await auth.signInAnonymously();isAuthenticated=true;return c.user;}
 
-        async function signInAnonymously() {
-            const cred = await auth.signInAnonymously();
-            isAuthenticated = true;
-            return cred.user;
-        }
-
-        async function loadCloudMemories() {
-            if (!storage || !isAuthenticated) return [];
-            try {
-                const result = await storage.ref().child('amintiri').listAll();
-                const mems = [];
-                for (const item of result.items) {
-                    try {
-                        const url = await item.getDownloadURL();
-                        const meta = await item.getMetadata();
-                        mems.push({ id: item.name, type: item.name.startsWith('image_') ? 'image' : 'video', date: meta.timeCreated, fileName: item.name, cloudURL: url, cloudPath: item.fullPath, isLocal: false });
-                    } catch {}
+        async function loadCloudMemories(){
+            if(!storage||!isAuthenticated)return[];
+            try{
+                const r=await storage.ref().child('amintiri').listAll();
+                const mems=[];
+                for(const item of r.items){
+                    try{
+                        const url=await item.getDownloadURL();
+                        const meta=await item.getMetadata();
+                        mems.push({id:item.name,type:item.name.startsWith('image_')?'image':'video',date:meta.timeCreated,cloudURL:url,cloudPath:item.fullPath});
+                    }catch(e){}
                 }
                 return mems;
-            } catch { return []; }
+            }catch(e){return[];}
         }
 
-        function createPlaceholder(type) {
-            const d = document.createElement('div');
-            d.className = 'placeholder';
-            d.innerHTML = type === 'image' ? '📷' : '🎥';
-            return d;
-        }
+        function createGalleryItem(memory, index){
+            const item=document.createElement('div');
+            item.className='gallery-item';
+            const mc=document.createElement('div'); mc.className='media-container';
 
-        function createGalleryItem(memory, index) {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.dataset.type = memory.type;
-            const mc = document.createElement('div');
-            mc.className = 'media-container';
-            if (memory.type === 'image') {
-                if (memory.cloudURL) { const img = document.createElement('img'); img.src = memory.cloudURL; img.alt = formatDate(memory.date); mc.appendChild(img); }
-                else mc.appendChild(createPlaceholder('image'));
+            if(memory.cloudURL){
+                if(memory.type==='image'){
+                    const img=document.createElement('img'); img.src=memory.cloudURL; img.loading='lazy'; mc.appendChild(img);
+                } else {
+                    const vid=document.createElement('video'); vid.src=memory.cloudURL; vid.muted=true; vid.preload='metadata'; mc.appendChild(vid);
+                    const ov=document.createElement('div'); ov.className='play-overlay';
+                    const pb=document.createElement('div'); pb.className='play-btn'; ov.appendChild(pb); mc.appendChild(ov);
+                }
+                const badge=document.createElement('div'); badge.className='item-type-badge';
+                badge.textContent=memory.type==='image'?'📷':'🎥'; mc.appendChild(badge);
             } else {
-                if (memory.cloudURL) {
-                    const vid = document.createElement('video'); vid.muted = true; vid.preload = 'metadata'; vid.src = memory.cloudURL; mc.appendChild(vid);
-                    const pb = document.createElement('button'); pb.className = 'play-button'; mc.appendChild(pb);
-                } else mc.appendChild(createPlaceholder('video'));
+                const ph=document.createElement('div'); ph.className='placeholder';
+                ph.textContent=memory.type==='image'?'📷':'🎥'; mc.appendChild(ph);
             }
-            const info = document.createElement('div'); info.className = 'item-info';
-            info.innerHTML = `<div>${formatDate(memory.date)}</div><div class="item-type">${memory.type === 'image' ? '📷 Fotografie' : '🎥 Video'}</div>`;
-            mc.appendChild(info);
+
             item.appendChild(mc);
-            item.addEventListener('click', () => openModal(index));
+            item.addEventListener('click',()=>openModal(index));
             return item;
         }
 
-        function openModal(index) {
-            currentModalIndex = index; displayModalContent();
-            modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
-            updateNavButtons();
+        function openModal(index){
+            currentModalIndex=index; displayModal();
+            modal.style.display='flex'; document.body.style.overflow='hidden';
+            updateNavBtns();
         }
-
-        function displayModalContent() {
-            const mem = filteredMemories[currentModalIndex];
-            if (!mem) return;
-            modalContent.innerHTML = '';
-            if (mem.type === 'image') {
-                if (mem.cloudURL) { const img = document.createElement('img'); img.src = mem.cloudURL; modalContent.appendChild(img); }
-                else { const ph = createPlaceholder('image'); ph.style.cssText = 'width:300px;height:300px;border-radius:18px;'; modalContent.appendChild(ph); }
-            } else {
-                if (mem.cloudURL) { const vid = document.createElement('video'); vid.controls = true; vid.src = mem.cloudURL; modalContent.appendChild(vid); }
-                else { const ph = createPlaceholder('video'); ph.style.cssText = 'width:300px;height:300px;border-radius:18px;'; modalContent.appendChild(ph); }
-            }
-            modalCounter.textContent = `${currentModalIndex+1} / ${filteredMemories.length}`;
+        function displayModal(){
+            const m=filteredMemories[currentModalIndex]; if(!m)return;
+            modalContent.innerHTML='';
+            if(m.type==='image'&&m.cloudURL){const img=document.createElement('img');img.src=m.cloudURL;modalContent.appendChild(img);}
+            else if(m.type==='video'&&m.cloudURL){const vid=document.createElement('video');vid.controls=true;vid.src=m.cloudURL;modalContent.appendChild(vid);}
+            else{const ph=document.createElement('div');ph.className='placeholder';ph.style.cssText='width:260px;height:260px;border-radius:16px;';ph.textContent=m.type==='image'?'📷':'🎥';modalContent.appendChild(ph);}
+            modalCounter.textContent=`${currentModalIndex+1} / ${filteredMemories.length}`;
         }
-
-        function navigatePrev() { if (currentModalIndex > 0) { currentModalIndex--; displayModalContent(); updateNavButtons(); } }
-        function navigateNext() { if (currentModalIndex < filteredMemories.length-1) { currentModalIndex++; displayModalContent(); updateNavButtons(); } }
-        function updateNavButtons() { prevButton.disabled = currentModalIndex === 0; nextButton.disabled = currentModalIndex === filteredMemories.length-1; }
-
-        function closeModal() {
-            modal.style.display = 'none'; document.body.style.overflow = 'auto';
-            modalContent.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
+        function closeModal(){
+            modal.style.display='none'; document.body.style.overflow='hidden';
+            modalContent.querySelectorAll('video').forEach(v=>{v.pause();v.currentTime=0;});
         }
+        function updateNavBtns(){prevBtn.disabled=currentModalIndex===0;nextBtn.disabled=currentModalIndex===filteredMemories.length-1;}
 
-        function filterMemories(filter) {
-            currentFilter = filter;
-            filterButtons.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
-            filteredMemories = filter === 'all' ? [...allMemories] : allMemories.filter(m => m.type === filter);
+        closeBtn.addEventListener('click',closeModal);
+        prevBtn.addEventListener('click',()=>{if(currentModalIndex>0){currentModalIndex--;displayModal();updateNavBtns();}});
+        nextBtn.addEventListener('click',()=>{if(currentModalIndex<filteredMemories.length-1){currentModalIndex++;displayModal();updateNavBtns();}});
+        modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+        document.addEventListener('keydown',e=>{if(modal.style.display==='flex'){if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft'&&currentModalIndex>0){currentModalIndex--;displayModal();updateNavBtns();}else if(e.key==='ArrowRight'&&currentModalIndex<filteredMemories.length-1){currentModalIndex++;displayModal();updateNavBtns();}}});
+
+        // Swipe in modal
+        let tx=0;
+        modal.addEventListener('touchstart',e=>tx=e.changedTouches[0].screenX);
+        modal.addEventListener('touchend',e=>{const diff=tx-e.changedTouches[0].screenX;if(Math.abs(diff)>50){if(diff>0&&currentModalIndex<filteredMemories.length-1){currentModalIndex++;displayModal();updateNavBtns();}else if(diff<0&&currentModalIndex>0){currentModalIndex--;displayModal();updateNavBtns();}}});
+
+        function filterMemories(f){
+            currentFilter=f;
+            document.querySelectorAll('.filter-button').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));
+            filteredMemories=f==='all'?[...allMemories]:allMemories.filter(m=>m.type===f);
             displayMemories(filteredMemories);
         }
-
-        function displayMemories(mems) {
-            galleryContainer.innerHTML = '';
-            if (mems.length === 0) {
-                loadingMessage.style.display = 'none'; emptyMessage.style.display = 'flex'; galleryContainer.style.display = 'none'; return;
+        function displayMemories(mems){
+            galleryContainer.innerHTML='';
+            if(mems.length===0){
+                loadingMessage.style.display='none'; galleryWrapper.style.display='none'; emptyMessage.style.display='flex'; return;
             }
-            mems.forEach((m, i) => galleryContainer.appendChild(createGalleryItem(m, i)));
-            loadingMessage.style.display = 'none'; emptyMessage.style.display = 'none'; galleryContainer.style.display = 'grid';
+            mems.forEach((m,i)=>galleryContainer.appendChild(createGalleryItem(m,i)));
+            loadingMessage.style.display='none'; emptyMessage.style.display='none'; galleryWrapper.style.display='block';
         }
 
-        async function loadAllMemories() {
-            try {
-                let cloud = [];
-                if (auth) { try { await signInAnonymously(); cloud = await loadCloudMemories(); } catch {} }
-                allMemories = cloud.sort((a,b) => new Date(b.date) - new Date(a.date));
+        document.querySelectorAll('.filter-button').forEach(b=>b.addEventListener('click',()=>filterMemories(b.dataset.filter)));
+
+        async function loadAll(){
+            try{
+                let cloud=[];
+                if(auth){try{await signInAnonymously();cloud=await loadCloudMemories();}catch(e){}}
+                allMemories=cloud.sort((a,b)=>new Date(b.date)-new Date(a.date));
                 filterMemories(currentFilter);
-            } catch { showError('Eroare la încărcare.'); loadingMessage.style.display = 'none'; emptyMessage.style.display = 'flex'; }
+            }catch(e){showError('Eroare la încărcare.');loadingMessage.style.display='none';emptyMessage.style.display='flex';}
         }
 
-        closeButton.addEventListener('click', closeModal);
-        prevButton.addEventListener('click', navigatePrev);
-        nextButton.addEventListener('click', navigateNext);
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        window.addEventListener('load',loadAll);
+        document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadAll();});
 
-        document.addEventListener('keydown', e => {
-            if (modal.style.display === 'flex') {
-                if (e.key === 'Escape') closeModal();
-                else if (e.key === 'ArrowLeft') navigatePrev();
-                else if (e.key === 'ArrowRight') navigateNext();
-            }
-        });
-
-        filterButtons.forEach(b => b.addEventListener('click', () => filterMemories(b.dataset.filter)));
-
-        let touchStartX = 0;
-        modal.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-        modal.addEventListener('touchend', e => {
-            const diff = touchStartX - e.changedTouches[0].screenX;
-            if (Math.abs(diff) > 50) { if (diff > 0) navigateNext(); else navigatePrev(); }
-        });
-
-        let lastTouch = 0;
-        document.addEventListener('touchend', e => {
-            const now = Date.now();
-            if (now - lastTouch <= 300) e.preventDefault();
-            lastTouch = now;
-        }, false);
-
-        window.addEventListener('load', loadAllMemories);
-        document.addEventListener('visibilitychange', () => { if (!document.hidden) loadAllMemories(); });
+        let lastTouch=0;
+        document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTouch<=300)e.preventDefault();lastTouch=n;},false);
     </script>
 </body>
 </html>

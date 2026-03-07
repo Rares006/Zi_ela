@@ -3,36 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🎂 Un Anișor de Amintiri</title>
+    <title>🎂 La mulți ani, Ela!</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --pink: #f9a8d4;
-            --pink-dark: #ec4899;
-            --peach: #fcd5b0;
-            --mint: #bbf7d0;
-            --mint-dark: #4ade80;
-            --lavender: #ddd6fe;
-            --yellow: #fef08a;
-            --cream: #fffbeb;
-            --brown: #92400e;
-        }
-
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             font-family: 'Quicksand', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
             background: #fff8f0;
-            position: relative;
         }
 
-        /* Animated pastel background */
         .bg-gradient {
             position: fixed;
             inset: 0;
-            background: 
+            background:
                 radial-gradient(ellipse at 20% 20%, #fce7f3 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 10%, #e0f2fe 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 80%, #dcfce7 0%, transparent 50%),
@@ -41,86 +28,85 @@
             z-index: 0;
         }
 
-        /* Floating bubbles */
-        .bubbles {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .bubble {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
-
-        /* Stars/confetti */
         .confetti-piece {
-            position: absolute;
-            width: 8px;
-            height: 8px;
+            position: fixed;
             border-radius: 2px;
             animation: confettiFall linear infinite;
+            pointer-events: none;
+            z-index: 1;
         }
-
         @keyframes confettiFall {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            0%   { transform: translateY(-20px) rotate(0deg);   opacity: 0.8; }
             100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
 
-        .container {
+        .sticker {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.10));
+            animation: stickerFloat ease-in-out infinite;
+        }
+        @keyframes stickerFloat {
+            0%, 100% { transform: translateY(0)    rotate(var(--rot)); }
+            50%       { transform: translateY(-8px) rotate(var(--rot)); }
+        }
+
+        /* THE key: fill the whole screen, no scroll */
+        .screen {
             position: relative;
             z-index: 2;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 40px 20px 60px;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-evenly;
+            padding: 16px 20px;
         }
 
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 50px;
-            animation: bounceIn 0.8s ease-out;
+            animation: bounceIn 0.7s ease-out both;
+        }
+        @keyframes bounceIn {
+            0%   { transform: scale(0.6) translateY(-30px); opacity: 0; }
+            65%  { transform: scale(1.08); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        @keyframes bounceIn {
-            0% { transform: scale(0.5) translateY(-50px); opacity: 0; }
-            60% { transform: scale(1.1) translateY(5px); }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
+        .cake {
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            display: inline-block;
+            animation: wobble 2s ease-in-out infinite;
+            margin-bottom: 6px;
+        }
+        @keyframes wobble {
+            0%, 100% { transform: rotate(-6deg); }
+            50%       { transform: rotate(6deg); }
         }
 
         .birthday-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--pink), var(--peach));
+            gap: 6px;
+            background: linear-gradient(135deg, #f9a8d4, #fcd5b0);
             color: white;
-            padding: 8px 22px;
+            padding: 5px 16px;
             border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 2px;
+            font-size: clamp(0.65rem, 2.5vw, 0.8rem);
+            font-weight: 700;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 18px;
-            box-shadow: 0 4px 15px rgba(249,168,212,0.5);
+            margin-bottom: 8px;
+            box-shadow: 0 3px 12px rgba(249,168,212,0.5);
         }
 
         .main-title {
             font-family: 'Baloo 2', cursive;
-            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-size: clamp(2rem, 10vw, 3.4rem);
             font-weight: 800;
             line-height: 1.1;
             background: linear-gradient(135deg, #f472b6, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
@@ -129,350 +115,191 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientFlow 4s ease infinite;
-            margin-bottom: 16px;
         }
-
         @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: clamp(0.75rem, 2.8vw, 0.95rem);
             color: #9ca3af;
             font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        /* Animals row decoration */
-        .animals-row {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: -10px;
-            margin-bottom: 40px;
-            animation: fadeInUp 0.8s ease-out 0.3s both;
-        }
-
-        .animal-deco {
-            width: clamp(60px, 10vw, 90px);
-            height: clamp(60px, 10vw, 90px);
-            object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-            animation: gentleBounce ease-in-out infinite;
-            transition: transform 0.3s ease;
-        }
-
-        .animal-deco:hover {
-            transform: scale(1.2) translateY(-8px) !important;
-        }
-
-        @keyframes gentleBounce {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Cards */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            width: 100%;
-            max-width: 700px;
-            animation: fadeInUp 0.8s ease-out 0.5s both;
-        }
-
-        .card {
-            position: relative;
-            border-radius: 28px;
-            padding: 36px 28px;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .card-camera {
-            background: linear-gradient(145deg, #fce7f3, #fbcfe8, #fdf2f8);
-            border: 2px solid #f9a8d4;
-            box-shadow: 0 8px 30px rgba(249,168,212,0.3);
-        }
-
-        .card-gallery {
-            background: linear-gradient(145deg, #dcfce7, #bbf7d0, #f0fdf4);
-            border: 2px solid #86efac;
-            box-shadow: 0 8px 30px rgba(134,239,172,0.3);
-        }
-
-        .card:hover {
-            transform: translateY(-12px) scale(1.03);
-        }
-
-        .card-camera:hover {
-            box-shadow: 0 20px 50px rgba(249,168,212,0.5);
-        }
-
-        .card-gallery:hover {
-            box-shadow: 0 20px 50px rgba(134,239,172,0.5);
-        }
-
-        .card-animal {
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
-            margin-bottom: 16px;
-            animation: gentleBounce ease-in-out infinite;
-        }
-
-        .card-camera .card-animal { animation-duration: 2.5s; }
-        .card-gallery .card-animal { animation-duration: 3s; animation-delay: 0.5s; }
-
-        .card-title {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            color: #374151;
-        }
-
-        .card-camera .card-title { color: #be185d; }
-        .card-gallery .card-title { color: #15803d; }
-
-        .card-desc {
-            font-size: 0.95rem;
-            color: #6b7280;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .card-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        .card-camera .card-btn {
-            background: linear-gradient(135deg, #f472b6, #ec4899);
-            color: white;
-            box-shadow: 0 4px 15px rgba(244,114,182,0.4);
-        }
-
-        .card-gallery .card-btn {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: white;
-            box-shadow: 0 4px 15px rgba(74,222,128,0.4);
-        }
-
-        .card:hover .card-btn {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-
-        /* Decorative ribbon */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            border-radius: 0 0 4px 4px;
-        }
-
-        .card-camera::before { background: #ec4899; }
-        .card-gallery::before { background: #22c55e; }
-
-        /* Footer */
-        .footer {
-            margin-top: 60px;
-            text-align: center;
-            animation: fadeInUp 0.8s ease-out 0.8s both;
-        }
-
-        .footer-animals {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .footer-animal {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-            animation: gentleBounce ease-in-out infinite;
-        }
-
-        .footer-text {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1rem;
-            color: #d1fae5;
-            font-weight: 600;
-        }
-
-        .footer-sub {
-            font-size: 0.8rem;
-            color: rgba(209,250,229,0.6);
             margin-top: 4px;
         }
 
-        /* Cake decoration at top */
-        .top-decoration {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            animation: wobble 2s ease-in-out infinite;
+        /* Cards — side by side */
+        .cards {
+            display: flex;
+            gap: 14px;
+            width: 100%;
+            max-width: 440px;
+            animation: fadeInUp 0.7s ease-out 0.3s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes wobble {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
+        .card {
+            flex: 1;
+            border-radius: 24px;
+            padding: clamp(14px, 4vw, 22px) clamp(10px, 3vw, 16px);
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-camera {
+            background: linear-gradient(160deg, #fce7f3, #fbcfe8);
+            border: 2px solid #f9a8d4;
+            box-shadow: 0 6px 22px rgba(249,168,212,0.3);
+        }
+        .card-gallery {
+            background: linear-gradient(160deg, #dcfce7, #bbf7d0);
+            border: 2px solid #86efac;
+            box-shadow: 0 6px 22px rgba(134,239,172,0.3);
+        }
+        .card:active { transform: scale(0.95); }
+
+        .card-animal {
+            width: clamp(55px, 17vw, 88px);
+            height: clamp(55px, 17vw, 88px);
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: gentleBounce ease-in-out infinite;
+        }
+        .card-camera .card-animal { animation-duration: 2.5s; }
+        .card-gallery .card-animal { animation-duration: 3s; animation-delay: 0.5s; }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-7px); }
         }
 
-        /* Stars scattered */
-        .star {
-            position: fixed;
-            pointer-events: none;
-            font-size: 1.2rem;
-            animation: twinkle ease-in-out infinite;
-            z-index: 1;
+        .card-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(0.9rem, 3.5vw, 1.15rem);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .card-camera .card-title { color: #be185d; }
+        .card-gallery .card-title { color: #15803d; }
+
+        .card-btn {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 50px;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: clamp(0.68rem, 2.4vw, 0.82rem);
+        }
+        .card-camera .card-btn {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: white;
+            box-shadow: 0 3px 10px rgba(244,114,182,0.4);
+        }
+        .card-gallery .card-btn {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            box-shadow: 0 3px 10px rgba(74,222,128,0.4);
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 0.8; transform: scale(1.2); }
+        /* Footer */
+        .footer {
+            text-align: center;
+            animation: fadeInUp 0.7s ease-out 0.5s both;
         }
-
-        @media (max-width: 600px) {
-            .cards { grid-template-columns: 1fr; max-width: 380px; }
-            .animals-row { gap: 4px; }
+        .footer-text {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(0.72rem, 2.6vw, 0.9rem);
+            color: #be185d;
+            font-weight: 700;
+        }
+        .footer-sub {
+            font-size: 0.65rem;
+            color: #9ca3af;
+            
         }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
-    <div class="bubbles" id="bubbles"></div>
 
-    <!-- Fixed stars -->
-    <div class="star" style="top:8%;left:5%;animation-duration:2.1s;animation-delay:0s;">⭐</div>
-    <div class="star" style="top:15%;right:8%;animation-duration:1.8s;animation-delay:0.5s;">✨</div>
-    <div class="star" style="top:45%;left:3%;animation-duration:2.4s;animation-delay:1s;">🌟</div>
-    <div class="star" style="bottom:20%;right:5%;animation-duration:1.9s;animation-delay:0.3s;">⭐</div>
-    <div class="star" style="bottom:35%;left:7%;animation-duration:2.2s;animation-delay:0.8s;">✨</div>
-    <div class="star" style="top:70%;right:3%;animation-duration:2s;animation-delay:1.2s;">🌟</div>
+    <!-- Abțibilduri răspândite pe tot fundalul -->
+    <img src="61e5c12a-b99c-4121-bc68-9a092b484377.png" class="sticker" style="width:48px;  top:3%;  left:7%;  --rot:-22deg; animation-duration:3.1s; animation-delay:0s;   opacity:0.42;">
+    <img src="8253a088-3266-48ce-812d-2e44ced702d3.png" class="sticker" style="width:62px;  top:5%;  left:60%; --rot:14deg;  animation-duration:2.8s; animation-delay:0.7s; opacity:0.42;">
+    <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" class="sticker" style="width:50px;  top:9%;  left:33%; --rot:-8deg;  animation-duration:3.5s; animation-delay:0.3s; opacity:0.38;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:56px;  top:12%; left:80%; --rot:-30deg; animation-duration:2.6s; animation-delay:1.1s; opacity:0.4;">
+    <img src="3e637e7a-e1e1-49e3-8b77-fcd5dc61ca5b.png" class="sticker" style="width:68px;  top:22%; left:4%;  --rot:20deg;  animation-duration:4s;   animation-delay:0.5s; opacity:0.36;">
+    <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="sticker" style="width:46px;  top:26%; left:50%; --rot:-15deg; animation-duration:3.2s; animation-delay:1.4s; opacity:0.38;">
+    <img src="fbf06e1a-ed14-4ac5-9dfd-ca9a3d79e6d4.png" class="sticker" style="width:60px;  top:30%; left:76%; --rot:35deg;  animation-duration:2.9s; animation-delay:0.2s; opacity:0.36;">
+    <img src="2a2a47c3-043b-4c5f-a935-380042c91e17.png" class="sticker" style="width:44px;  top:42%; left:14%; --rot:-18deg; animation-duration:3.6s; animation-delay:0.9s; opacity:0.4;">
+    <img src="65189b18-95f1-47fa-9dd1-a1665ad10f48.png" class="sticker" style="width:62px;  top:55%; left:42%; --rot:28deg;  animation-duration:3.3s; animation-delay:1.6s; opacity:0.34;">
+    <img src="e80ac0ef-d369-4110-b0d1-7228cd6d5ef3.png" class="sticker" style="width:52px;  top:60%; left:22%; --rot:-10deg; animation-duration:2.7s; animation-delay:0.4s; opacity:0.38;">
+    <img src="05d4c5cf-73e5-4da8-baae-24bb68af598b.png" class="sticker" style="width:48px;  top:63%; left:68%; --rot:40deg;  animation-duration:3.8s; animation-delay:1.2s; opacity:0.38;">
+    <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" class="sticker" style="width:52px;  top:75%; left:55%; --rot:-25deg; animation-duration:2.5s; animation-delay:1s;   opacity:0.36;">
+    <img src="8253a088-3266-48ce-812d-2e44ced702d3.png" class="sticker" style="width:56px;  top:80%; left:8%;  --rot:12deg;  animation-duration:3.4s; animation-delay:0.8s; opacity:0.38;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:44px;  top:86%; left:78%; --rot:-35deg; animation-duration:3.1s; animation-delay:1.5s; opacity:0.36;">
 
-    <div class="container">
+    <div class="screen">
+
         <header class="header">
-            <div class="top-decoration">🎂</div>
+            <div class="cake">🎂</div>
             <div class="birthday-badge">🎉 Prima Aniversare 🎉</div>
-            <h1 class="main-title">Un Anișor<br>de Amintiri</h1>
-            <p class="subtitle">Capturează magia primului an de viață</p>
+            <h1 class="main-title">La mulți ani,<br>Ela! 🎀</h1>
         </header>
 
-        <!-- Decorative animals row -->
-        <div class="animals-row">
-            <img src="61e5c12ab99c4121bc689a092b484377.png" class="animal-deco" style="animation-duration:2.2s;" alt="owl">
-            <img src="8253a088326648ce812d2e44ced702d3.png" class="animal-deco" style="animation-duration:2.5s;animation-delay:0.3s;" alt="bunny">
-            <img src="d3f58b6ab357400b8ad1885dfd0e2900.png" class="animal-deco" style="animation-duration:2s;animation-delay:0.6s;" alt="squirrel">
-            <img src="b55915826b094735b732c1481db7e05a.png" class="animal-deco" style="animation-duration:2.7s;animation-delay:0.2s;" alt="fox">
-            <img src="3e637e7ae1e149e38b77fcd5dc61ca5b.png" class="animal-deco" style="animation-duration:2.3s;animation-delay:0.5s;" alt="bear">
-        </div>
-
-        <!-- Navigation cards -->
         <main class="cards">
             <a href="camera2.html" class="card card-camera">
-                <img src="64921c0f9b1b443fa621ad8bd47c8949.png" class="card-animal" alt="deer">
+                <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="card-animal" alt="">
                 <h2 class="card-title">📸 Cameră Foto</h2>
-                <p class="card-desc">Fă poze și filmulețe cu bebelușul tău la ziua lui specială!</p>
-                <span class="card-btn">Hai să fotografiem! →</span>
+                <span class="card-btn">Fotografiem! →</span>
             </a>
-
             <a href="gallery.html" class="card card-gallery">
-                <img src="fbf06e1aed144ac59dfdca9a3d79e6d4.png" class="card-animal" alt="hedgehog">
+                <img src="fbf06e1a-ed14-4ac5-9dfd-ca9a3d79e6d4.png" class="card-animal" alt="">
                 <h2 class="card-title">🖼️ Album Amintiri</h2>
-                <p class="card-desc">Privește toate momentele drăguțe salvate din prima zi de viață!</p>
                 <span class="card-btn">Vezi albumul! →</span>
             </a>
         </main>
 
         <footer class="footer">
-            <div class="footer-animals">
-                <img src="2a2a47c3043b4c5fa935380042c91e17.png" class="footer-animal" style="animation-duration:2.1s;" alt="">
-                <img src="65189b1895f147fa9dd1a1665ad10f48.png" class="footer-animal" style="animation-duration:2.6s;animation-delay:0.4s;" alt="">
-                <img src="05d4c5cf73e54da8baae24bb68af598b.png" class="footer-animal" style="animation-duration:2.3s;animation-delay:0.2s;" alt="">
-                <img src="e80ac0efd3694110b0d17228cd6d5ef3.png" class="footer-animal" style="animation-duration:1.9s;animation-delay:0.6s;" alt="">
-            </div>
-            <p class="footer-text">🎀 Cu dragoste, pentru ziua ta specială 🎀</p>
-            <p class="footer-sub">© 2025 Un an de poveste</p>
+            <p class="footer-text">🎀 La mulți ani, Ela! Un an plin de iubire 🎀</p>
+            <p class="footer-sub">© 2025 Primul anișor al Elei</p>
         </footer>
+
     </div>
 
     <script>
-        // Create floating bubbles
-        const bubbleContainer = document.getElementById('bubbles');
-        const colors = ['#fce7f3','#dcfce7','#dbeafe','#fef9c3','#ede9fe','#ffedd5'];
-        
-        for (let i = 0; i < 18; i++) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            const size = Math.random() * 50 + 15;
-            bubble.style.cssText = `
-                width: ${size}px;
-                height: ${size}px;
-                left: ${Math.random() * 100}%;
-                background: ${colors[Math.floor(Math.random() * colors.length)]};
-                animation-duration: ${Math.random() * 8 + 6}s;
-                animation-delay: ${Math.random() * 8}s;
-            `;
-            bubbleContainer.appendChild(bubble);
-        }
-
         // Confetti
-        const confettiColors = ['#f472b6','#fb923c','#facc15','#4ade80','#60a5fa','#c084fc','#f87171'];
-        for (let i = 0; i < 25; i++) {
+        const colors = ['#f472b6','#fb923c','#facc15','#4ade80','#60a5fa','#c084fc','#f87171'];
+        for (let i = 0; i < 22; i++) {
             const c = document.createElement('div');
             c.className = 'confetti-piece';
             c.style.cssText = `
-                left: ${Math.random() * 100}%;
-                background: ${confettiColors[Math.floor(Math.random() * confettiColors.length)]};
-                animation-duration: ${Math.random() * 5 + 4}s;
-                animation-delay: ${Math.random() * 6}s;
-                width: ${Math.random() * 8 + 4}px;
-                height: ${Math.random() * 8 + 4}px;
-                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                position: fixed;
-                top: -20px;
-                opacity: 0.7;
+                left:${Math.random()*100}%; top:-20px;
+                background:${colors[Math.floor(Math.random()*colors.length)]};
+                width:${Math.random()*7+4}px; height:${Math.random()*7+4}px;
+                border-radius:${Math.random()>.5?'50%':'2px'};
+                animation-duration:${Math.random()*5+4}s;
+                animation-delay:${Math.random()*6}s;
+                opacity:0.7;
             `;
             document.body.appendChild(c);
         }
 
-        // Card navigation
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
                 e.preventDefault();
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => { window.location.href = this.href; }, 200);
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { window.location.href = this.href; }, 180);
             });
         });
 
-        // Prevent zoom on double tap
         let lastTouch = 0;
         document.addEventListener('touchend', e => {
             const now = Date.now();

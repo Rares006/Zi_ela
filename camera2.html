@@ -2,619 +2,451 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📸 Cameră Amintiri</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>📸 Amintiri cu Ela</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
             font-family: 'Quicksand', sans-serif;
-            min-height: 100vh;
             background: #fff8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            overflow-x: hidden;
         }
 
         .bg-gradient {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background:
                 radial-gradient(ellipse at 10% 10%, #fce7f3 0%, transparent 40%),
-                radial-gradient(ellipse at 90% 90%, #dcfce7 0%, transparent 40%),
-                radial-gradient(ellipse at 50% 50%, #fff8f0 0%, transparent 60%);
+                radial-gradient(ellipse at 90% 90%, #dcfce7 0%, transparent 40%);
             background-color: #fff8f0;
             z-index: 0;
         }
 
+        /* Stickers */
+        .sticker {
+            position: fixed; pointer-events: none; z-index: 1;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.08));
+            animation: stickerFloat ease-in-out infinite;
+        }
+        @keyframes stickerFloat {
+            0%,100% { transform: translateY(0) rotate(var(--rot)); }
+            50%      { transform: translateY(-7px) rotate(var(--rot)); }
+        }
+
+        /* Top bar */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 58px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 14px;
+            z-index: 50;
+        }
+
         .back-button {
-            position: fixed;
-            top: 18px;
-            left: 18px;
             background: linear-gradient(135deg, #f472b6, #ec4899);
             color: white;
-            padding: 10px 20px;
-            border: none;
+            padding: 8px 16px;
             border-radius: 50px;
             font-family: 'Baloo 2', cursive;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-decoration: none;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(236,72,153,0.35);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            box-shadow: 0 3px 10px rgba(236,72,153,0.35);
         }
 
-        .back-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(236,72,153,0.45); }
-
         #authStatus {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #6b7280;
             background: white;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 50px;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             font-family: 'Quicksand', sans-serif;
             font-weight: 600;
         }
 
-        .page-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 500px;
-            padding: 90px 20px 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Main screen */
+        .screen {
+            position: relative; z-index: 2;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between;
+            padding: 66px 16px 14px;
         }
 
-        /* Header animal + title */
+        /* Header */
         .page-header {
-            text-align: center;
-            margin-bottom: 24px;
+            display: flex; align-items: center; gap: 10px;
             animation: bounceIn 0.6s ease-out;
         }
-
         @keyframes bounceIn {
-            0% { transform: scale(0.7) translateY(-20px); opacity: 0; }
+            0% { transform: scale(0.7); opacity: 0; }
             70% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
-
         .header-animal {
-            width: 90px;
-            height: 90px;
+            width: clamp(44px, 12vw, 60px);
+            height: clamp(44px, 12vw, 60px);
             object-fit: contain;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
             animation: gentleBounce 2.4s ease-in-out infinite;
-            margin-bottom: 10px;
         }
-
         @keyframes gentleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
-
         h1 {
             font-family: 'Baloo 2', cursive;
-            font-size: 2rem;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
             font-weight: 800;
             color: #be185d;
-            line-height: 1.1;
         }
 
-        /* Video viewer */
-        video {
-            border-radius: 24px;
+        /* Media area — takes remaining space */
+        .media-area {
+            flex: 1;
             width: 100%;
-            max-height: 55vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 8px 0;
+            min-height: 0;
+        }
+
+        #video {
+            width: 100%; height: 100%;
             object-fit: cover;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            border-radius: 20px;
             border: 3px solid #f9a8d4;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             display: none;
-            margin: 14px 0;
         }
-
         #previewVideo {
-            border-radius: 24px;
-            width: 100%;
-            max-height: 55vh;
+            width: 100%; height: 100%;
             object-fit: contain;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            border-radius: 20px;
             border: 3px solid #86efac;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             display: none;
-            margin: 14px 0;
         }
-
         #previewImage {
-            max-width: 100%;
-            max-height: 55vh;
+            max-width: 100%; max-height: 100%;
             object-fit: contain;
-            border-radius: 24px;
+            border-radius: 20px;
             border: 3px solid #86efac;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             display: none;
-            margin: 14px 0;
         }
 
         #info {
             font-family: 'Baloo 2', cursive;
-            font-size: 1.1rem;
+            font-size: clamp(0.85rem, 3.2vw, 1rem);
             font-weight: 700;
             color: #9ca3af;
             text-align: center;
-            padding: 20px 16px;
+            padding: 16px;
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             width: 100%;
             border: 2px dashed #f9a8d4;
-            margin: 8px 0 16px;
         }
+
+        /* Progress */
+        #progressContainer {
+            width: 100%; background: #f3f4f6;
+            border-radius: 50px; display: none; overflow: hidden;
+        }
+        #progressBar {
+            height: 22px;
+            background: linear-gradient(90deg, #f472b6, #4ade80, #60a5fa);
+            background-size: 200% 100%;
+            animation: shine 1.5s linear infinite;
+            border-radius: 50px;
+            text-align: center; line-height: 22px;
+            color: white;
+            font-family: 'Baloo 2', cursive; font-size: 0.75rem; font-weight: 700;
+            width: 0%; transition: width 0.3s ease;
+        }
+        @keyframes shine { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
 
         /* Buttons */
         #buttonContainer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            display: flex; flex-wrap: wrap;
+            justify-content: center; gap: 8px;
             width: 100%;
         }
 
         button {
             font-family: 'Baloo 2', cursive;
             font-weight: 700;
-            font-size: 1rem;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
+            padding: 10px 18px;
+            border: none; border-radius: 50px; cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
+        button:active { transform: scale(0.95); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        button:hover { transform: translateY(-3px) scale(1.04); }
-        button:active { transform: scale(0.97); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        #startButton { background: linear-gradient(135deg, #f472b6, #ec4899); color: white; }
-        #captureButton { background: linear-gradient(135deg, #fb923c, #f97316); color: white; }
-        #recordButton { background: linear-gradient(135deg, #f87171, #ef4444); color: white; }
-        #stopRecordButton { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
-        #repetatiButton { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; }
-        #saveButton { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
-        #downloadButton { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; }
-        #switchCameraButton { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
-
-        /* Progress */
-        #progressContainer {
-            width: 100%;
-            background: #f3f4f6;
-            border-radius: 50px;
-            margin: 10px 0;
-            display: none;
-            overflow: hidden;
-        }
-
-        #progressBar {
-            height: 24px;
-            background: linear-gradient(90deg, #f472b6, #4ade80, #60a5fa);
-            background-size: 200% 100%;
-            animation: progressShine 1.5s linear infinite;
-            border-radius: 50px;
-            line-height: 24px;
-            text-align: center;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 0.8rem;
-            font-weight: 700;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        @keyframes progressShine {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
+        #startButton    { background: linear-gradient(135deg,#f472b6,#ec4899); color:white; }
+        #captureButton  { background: linear-gradient(135deg,#fb923c,#f97316); color:white; }
+        #recordButton   { background: linear-gradient(135deg,#f87171,#ef4444); color:white; }
+        #stopRecordButton{ background: linear-gradient(135deg,#6b7280,#4b5563); color:white; }
+        #repetatiButton { background: linear-gradient(135deg,#a78bfa,#8b5cf6); color:white; }
+        #saveButton     { background: linear-gradient(135deg,#4ade80,#22c55e); color:white; }
+        #downloadButton { background: linear-gradient(135deg,#60a5fa,#3b82f6); color:white; }
+        #switchCameraButton{ background: linear-gradient(135deg,#fbbf24,#f59e0b); color:white; }
 
         /* Messages */
-        .error-message {
-            color: #ef4444;
-            font-size: 0.9rem;
-            padding: 10px 16px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 14px;
+        .msg {
+            width: 100%; text-align: center;
+            font-size: 0.85rem; font-weight: 600;
+            padding: 8px 14px; border-radius: 12px;
             display: none;
-            width: 100%;
-            text-align: center;
-            font-weight: 600;
         }
-
-        .success-message {
-            color: #16a34a;
-            font-size: 0.9rem;
-            padding: 10px 16px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 14px;
-            display: none;
-            width: 100%;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        /* Floating butterflies decoration */
-        .butterfly-deco {
-            position: fixed;
-            pointer-events: none;
-            opacity: 0.5;
-            z-index: 1;
-        }
-
-        .bf1 { bottom: 15%; left: 3%; width: 60px; animation: floatButterfly 6s ease-in-out infinite; }
-        .bf2 { bottom: 30%; right: 4%; width: 50px; animation: floatButterfly 8s ease-in-out infinite 1s; }
-
-        @keyframes floatButterfly {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            33% { transform: translateY(-20px) rotate(5deg); }
-            66% { transform: translateY(-10px) rotate(-3deg); }
-        }
+        .msg-error  { color:#ef4444; background:#fef2f2; border:1px solid #fecaca; }
+        .msg-success{ color:#16a34a; background:#f0fdf4; border:1px solid #bbf7d0; }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
 
-    <!-- Butterfly decorations -->
-    <img src="e80ac0efd3694110b0d17228cd6d5ef3.png" class="butterfly-deco bf1" alt="">
-    <img src="05d4c5cf73e54da8baae24bb68af598b.png" class="butterfly-deco bf2" alt="">
+    <!-- Stickers -->
+    <img src="3e637e7a-e1e1-49e3-8b77-fcd5dc61ca5b.png" class="sticker" style="width:50px;top:8%;left:4%;--rot:-18deg;animation-duration:3.2s;opacity:0.35;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:55px;top:6%;right:5%;--rot:22deg;animation-duration:2.8s;animation-delay:0.5s;opacity:0.35;">
+    <img src="2a2a47c3-043b-4c5f-a935-380042c91e17.png" class="sticker" style="width:44px;bottom:22%;left:3%;--rot:30deg;animation-duration:3.5s;animation-delay:1s;opacity:0.32;">
+    <img src="65189b18-95f1-47fa-9dd1-a1665ad10f48.png" class="sticker" style="width:48px;bottom:18%;right:3%;--rot:-25deg;animation-duration:3s;animation-delay:0.3s;opacity:0.32;">
 
-    <a href="index.html" class="back-button">← Înapoi</a>
-    <div id="authStatus">Conectare...</div>
+    <div class="top-bar">
+        <a href="index.html" class="back-button">← Înapoi</a>
+        <div id="authStatus">Conectare...</div>
+    </div>
 
-    <div class="page-content">
+    <div class="screen">
+
         <div class="page-header">
-            <img src="64921c0f9b1b443fa621ad8bd47c8949.png" class="header-animal" alt="deer">
-            <h1>📸 Cameră Foto</h1>
+            <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="header-animal" alt="">
+            <h1>📸 Ziua Elei!</h1>
         </div>
 
-        <canvas id="canvas" style="display:none;"></canvas>
-        <video id="video" autoplay muted playsinline webkit-playsinline></video>
+        <div class="media-area">
+            <canvas id="canvas" style="display:none;"></canvas>
+            <video id="video" autoplay muted playsinline webkit-playsinline></video>
+            <video id="previewVideo" controls playsinline webkit-playsinline></video>
+            <img id="previewImage" alt="preview">
+            <div id="info">🎂 Apasă Start și fă o poză cu Ela!</div>
+        </div>
 
-        <div id="info">🎂 Apasă Start pentru a începe!</div>
+        <div class="msg msg-error"   id="errorMessage"></div>
+        <div class="msg msg-success" id="successMessage"></div>
 
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
+        <div id="progressContainer"><div id="progressBar">0%</div></div>
 
         <div id="buttonContainer">
             <button id="startButton">🌟 Start</button>
-            <button id="captureButton" style="display:none;">📷 Capturează</button>
-            <button id="recordButton" style="display:none;">🎥 Înregistrează</button>
+            <button id="captureButton"    style="display:none;">📷 Capturează</button>
+            <button id="recordButton"     style="display:none;">🎥 Înregistrează</button>
             <button id="stopRecordButton" style="display:none;">⏹ Stop</button>
-            <button id="repetatiButton" style="display:none;">🔄 Repetă</button>
-            <button id="saveButton" style="display:none;">💾 Salvează</button>
-            <button id="downloadButton" style="display:none;">⬇️ Descarcă</button>
+            <button id="repetatiButton"   style="display:none;">🔄 Repetă</button>
+            <button id="saveButton"       style="display:none;">💾 Salvează</button>
+            <button id="downloadButton"   style="display:none;">⬇️ Descarcă</button>
             <button id="switchCameraButton" style="display:none;">🔄 Camera</button>
         </div>
 
-        <div id="progressContainer">
-            <div id="progressBar">0%</div>
-        </div>
-
-        <video id="previewVideo" controls playsinline webkit-playsinline></video>
-        <img id="previewImage" alt="preview">
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
-
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCvzcH5QQfkJ2JDXcfPJCHo6n6iLjnEIAU",
-            authDomain: "clasa12a-a33d6.firebaseapp.com",
-            projectId: "clasa12a-a33d6",
-            storageBucket: "clasa12a-a33d6.firebasestorage.app",
-            messagingSenderId: "191239598512",
-            appId: "1:191239598512:web:333e9ef65eba04fa0be675",
-            measurementId: "G-JSTGC7K2ZZ"
+            apiKey: "AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
+            authDomain: "ziua-ela.firebaseapp.com",
+            projectId: "ziua-ela",
+            storageBucket: "ziua-ela.firebasestorage.app",
+            messagingSenderId: "180855324306",
+            appId: "1:180855324306:web:bb5f4aeabb1ca1847e304b"
         };
+        let firebaseApp, storage, auth, isAuthenticated = false;
+        try { firebaseApp = firebase.initializeApp(firebaseConfig); storage = firebase.storage(); auth = firebase.auth(); } catch(e) {}
 
-        let firebaseApp, storage, auth;
-        let isAuthenticated = false;
-        
-        try {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            storage = firebase.storage();
-            auth = firebase.auth();
-        } catch (error) { console.warn('Firebase init error:', error); }
+        let mediaRecorder, chunks = [], useFrontCamera = true, currentStream = null;
+        let currentMediaType = null, currentMediaData = null, cameraDeschisa = false;
 
-        let cameraDeschisa = false;
-        let mediaRecorder;
-        let chunks = [];
-        let useFrontCamera = true;
-        let currentStream = null;
-        let currentMediaType = null;
-        let currentMediaData = null;
-
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const startButton = document.getElementById('startButton');
-        const captureButton = document.getElementById('captureButton');
-        const recordButton = document.getElementById('recordButton');
-        const stopRecordButton = document.getElementById('stopRecordButton');
-        const repetatiButton = document.getElementById('repetatiButton');
-        const saveButton = document.getElementById('saveButton');
-        const downloadButton = document.getElementById('downloadButton');
+        const video           = document.getElementById('video');
+        const canvas          = document.getElementById('canvas');
+        const startButton     = document.getElementById('startButton');
+        const captureButton   = document.getElementById('captureButton');
+        const recordButton    = document.getElementById('recordButton');
+        const stopRecordButton= document.getElementById('stopRecordButton');
+        const repetatiButton  = document.getElementById('repetatiButton');
+        const saveButton      = document.getElementById('saveButton');
+        const downloadButton  = document.getElementById('downloadButton');
         const switchCameraButton = document.getElementById('switchCameraButton');
-        const previewImage = document.getElementById('previewImage');
-        const previewVideo = document.getElementById('previewVideo');
-        const info = document.getElementById('info');
+        const previewImage    = document.getElementById('previewImage');
+        const previewVideo    = document.getElementById('previewVideo');
+        const info            = document.getElementById('info');
         const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        const authStatus = document.getElementById('authStatus');
+        const progressBar     = document.getElementById('progressBar');
+        const errorMessage    = document.getElementById('errorMessage');
+        const successMessage  = document.getElementById('successMessage');
+        const authStatus      = document.getElementById('authStatus');
 
         function getSupportedMimeType() {
             const types = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4;codecs=h264','video/mp4'];
             for (let t of types) { if (MediaRecorder.isTypeSupported(t)) return t; }
             return '';
         }
-
-        function getRecorderOptions(mimeType) {
-            const opts = {};
-            if (mimeType) opts.mimeType = mimeType;
-            opts.videoBitsPerSecond = 3000000;
-            opts.audioBitsPerSecond = 128000;
-            return opts;
+        function getRecorderOptions(m) {
+            const o = {}; if(m) o.mimeType=m;
+            o.videoBitsPerSecond=3000000; o.audioBitsPerSecond=128000; return o;
         }
-
         async function signInAnonymously() {
-            try {
-                const cred = await auth.signInAnonymously();
-                isAuthenticated = true;
-                authStatus.textContent = '✅ Conectat';
-                authStatus.style.color = '#16a34a';
-                return cred.user;
-            } catch (e) {
-                authStatus.textContent = '❌ Offline';
-                authStatus.style.color = '#ef4444';
-                isAuthenticated = false;
-                throw e;
-            }
+            const c = await auth.signInAnonymously();
+            isAuthenticated = true;
+            authStatus.textContent = '✅ Conectat'; authStatus.style.color = '#16a34a';
+            return c.user;
         }
-
-        function showError(msg) {
-            errorMessage.textContent = msg;
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
-            setTimeout(() => errorMessage.style.display = 'none', 5000);
-        }
-
-        function showSuccess(msg) {
-            successMessage.textContent = msg;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
-            setTimeout(() => successMessage.style.display = 'none', 5000);
-        }
-
-        function updateProgress(pct, text) {
-            progressBar.style.width = pct + '%';
-            progressBar.textContent = text || pct + '%';
-        }
-
-        function dataURLtoBlob(dataURL) {
-            const arr = dataURL.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8 = new Uint8Array(n);
-            while (n--) u8[n] = bstr.charCodeAt(n);
-            return new Blob([u8], { type: mime });
+        function showError(msg) { errorMessage.textContent=msg; errorMessage.style.display='block'; successMessage.style.display='none'; setTimeout(()=>errorMessage.style.display='none',5000); }
+        function showSuccess(msg) { successMessage.textContent=msg; successMessage.style.display='block'; errorMessage.style.display='none'; setTimeout(()=>successMessage.style.display='none',5000); }
+        function updateProgress(p,t) { progressBar.style.width=p+'%'; progressBar.textContent=t||p+'%'; }
+        function dataURLtoBlob(d) {
+            const arr=d.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]);
+            let n=bstr.length; const u=new Uint8Array(n);
+            while(n--) u[n]=bstr.charCodeAt(n); return new Blob([u],{type:mime});
         }
 
         function activateCamera() {
-            const constraints = {
-                video: { facingMode: useFrontCamera ? 'user' : 'environment', width: {ideal:1280,max:1920}, height: {ideal:720,max:1080}, frameRate: {ideal:24,max:24} },
-                audio: { echoCancellation: true, sampleRate: 220050, channelCount: 1 }
-            };
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                    currentStream = stream;
-                    video.style.transform = 'rotateY(180deg)';
-                    video.srcObject = stream;
-                    video.play();
-                    video.style.display = 'block';
-                    cameraDeschisa = true;
-                    startButton.style.display = 'none';
-                    captureButton.style.display = 'block';
-                    recordButton.style.display = 'block';
-                    switchCameraButton.style.display = 'block';
-                    info.textContent = '🎉 Fă o poză sau un video drăguț!';
-                    errorMessage.style.display = 'none';
-                }).catch(() => showError('Nu s-a putut accesa camera. Verifică permisiunile.'));
-            } else { showError('Browser-ul nu suportă camera.'); }
+            const c = { video:{facingMode:useFrontCamera?'user':'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:24}}, audio:{echoCancellation:true,channelCount:1} };
+            navigator.mediaDevices.getUserMedia(c).then(stream => {
+                currentStream=stream; video.style.transform='rotateY(180deg)';
+                video.srcObject=stream; video.play(); video.style.display='block';
+                cameraDeschisa=true; startButton.style.display='none';
+                captureButton.style.display='block'; recordButton.style.display='block'; switchCameraButton.style.display='block';
+                info.textContent='🎉 Fă o poză sau un video drăguț cu Ela!';
+            }).catch(()=>showError('Nu s-a putut accesa camera.'));
         }
-
         function switchCamera() {
-            useFrontCamera = !useFrontCamera;
-            if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+            useFrontCamera=!useFrontCamera;
+            if(currentStream) currentStream.getTracks().forEach(t=>t.stop());
             activateCamera();
         }
-
         function takePicture() {
-            recordButton.style.display = 'none';
+            recordButton.style.display='none';
             try {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                if (useFrontCamera) { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                if (useFrontCamera) ctx.setTransform(1,0,0,1,0,0);
-                const imageDataURL = canvas.toDataURL('image/jpeg', 0.6);
-                currentMediaData = dataURLtoBlob(imageDataURL);
-                currentMediaType = 'image';
-                showPreview(imageDataURL, 'image');
-            } catch (e) { showError('Nu s-a putut captura imaginea.'); }
+                canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+                const ctx=canvas.getContext('2d');
+                if(useFrontCamera){ctx.translate(canvas.width,0);ctx.scale(-1,1);}
+                ctx.drawImage(video,0,0,canvas.width,canvas.height);
+                if(useFrontCamera) ctx.setTransform(1,0,0,1,0,0);
+                const url=canvas.toDataURL('image/jpeg',0.6);
+                currentMediaData=dataURLtoBlob(url); currentMediaType='image';
+                showPreview(url,'image');
+            } catch(e){showError('Nu s-a putut captura.');}
         }
-
         function startRecording() {
-            chunks = [];
-            captureButton.style.display = 'none';
+            chunks=[]; captureButton.style.display='none';
             try {
-                const mimeType = getSupportedMimeType();
-                mediaRecorder = new MediaRecorder(video.srcObject, getRecorderOptions(mimeType));
-                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'video/webm' });
-                    currentMediaData = blob;
-                    currentMediaType = 'video';
-                    showPreview(URL.createObjectURL(blob), 'video');
+                const m=getSupportedMimeType();
+                mediaRecorder=new MediaRecorder(video.srcObject,getRecorderOptions(m));
+                mediaRecorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+                mediaRecorder.onstop=()=>{
+                    const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'});
+                    currentMediaData=blob; currentMediaType='video';
+                    showPreview(URL.createObjectURL(blob),'video');
                 };
-                mediaRecorder.start();
-                stopRecordButton.style.display = 'block';
-                recordButton.style.display = 'none';
-                setTimeout(() => { if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 6000);
-            } catch (e) {
-                showError('Nu s-a putut începe înregistrarea.');
-                captureButton.style.display = 'block';
-            }
+                mediaRecorder.start(); stopRecordButton.style.display='block'; recordButton.style.display='none';
+                setTimeout(()=>{if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();},6000);
+            } catch(e){showError('Nu s-a putut înregistra.');captureButton.style.display='block';}
         }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-            stopRecordButton.style.display = 'none';
+        function stopRecording() { if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop(); stopRecordButton.style.display='none'; }
+        function showPreview(src,type) {
+            video.style.display='none'; captureButton.style.display='none'; recordButton.style.display='none';
+            info.style.display='none'; switchCameraButton.style.display='none';
+            if(type==='image'){previewImage.src=src;previewImage.style.display='block';previewVideo.style.display='none';}
+            else{previewVideo.src=src;previewVideo.style.display='block';previewImage.style.display='none';}
+            saveButton.style.display='block'; downloadButton.style.display='block'; repetatiButton.style.display='block';
         }
-
-        function showPreview(src, type) {
-            video.style.display = 'none';
-            captureButton.style.display = 'none';
-            recordButton.style.display = 'none';
-            info.style.display = 'none';
-            switchCameraButton.style.display = 'none';
-            if (type === 'image') { previewImage.src = src; previewImage.style.display = 'block'; previewVideo.style.display = 'none'; }
-            else { previewVideo.src = src; previewVideo.style.display = 'block'; previewImage.style.display = 'none'; }
-            saveButton.style.display = 'block';
-            downloadButton.style.display = 'block';
-            repetatiButton.style.display = 'block';
-        }
-
-        async function uploadToCloud(blob, filename) {
-            const fileRef = storage.ref().child(`amintiri/${filename}`);
-            const uploadTask = fileRef.put(blob);
-            return new Promise((res, rej) => {
-                uploadTask.on('state_changed',
-                    snap => updateProgress((snap.bytesTransferred/snap.totalBytes)*100, `Încărcare: ${Math.round((snap.bytesTransferred/snap.totalBytes)*100)}%`),
+        async function uploadToCloud(blob,filename) {
+            const ref=storage.ref().child(`amintiri/${filename}`);
+            const task=ref.put(blob);
+            return new Promise((res,rej)=>{
+                task.on('state_changed',
+                    s=>updateProgress((s.bytesTransferred/s.totalBytes)*100,`Încărcare: ${Math.round((s.bytesTransferred/s.totalBytes)*100)}%`),
                     rej,
-                    async () => { try { const url = await uploadTask.snapshot.ref.getDownloadURL(); res({ downloadURL: url, fullPath: uploadTask.snapshot.ref.fullPath, name: uploadTask.snapshot.ref.name }); } catch(e) { rej(e); } }
+                    async()=>{try{const url=await task.snapshot.ref.getDownloadURL();res({downloadURL:url,fullPath:task.snapshot.ref.fullPath});}catch(e){rej(e);}}
                 );
             });
         }
-
         async function saveToCloud() {
-            if (!currentMediaData) { showError('Nu există date pentru salvare.'); return; }
-            if (!isAuthenticated) {
-                try { await signInAnonymously(); } catch { showError('Offline - se salvează local...'); setTimeout(saveToLocal, 1000); return; }
-            }
+            if(!currentMediaData){showError('Nu există date.');return;}
+            if(!isAuthenticated){try{await signInAnonymously();}catch{showError('Offline - salvare locală...');setTimeout(saveToLocal,1000);return;}}
             try {
-                saveButton.disabled = true;
-                progressContainer.style.display = 'block';
-                updateProgress(5, 'Pregătire...');
-                const ts = new Date().toISOString().replace(/[:.]/g, '-');
-                const ext = currentMediaType === 'image' ? 'jpg' : 'webm';
-                const filename = `${currentMediaType}_${ts}.${ext}`;
-                updateProgress(10, 'Conectare...');
-                const result = await uploadToCloud(currentMediaData, filename);
-                saveMetadataToLocal({ id: filename, type: currentMediaType, date: new Date().toISOString(), fileName: filename, cloudURL: result.downloadURL, cloudPath: result.fullPath });
-                updateProgress(100, '🎉 Complet!');
-                setTimeout(() => { showSuccessMessage(); showSuccess('🎂 Amintirea a fost salvată!'); }, 500);
-            } catch (e) { showError('Eroare cloud. Se salvează local...'); setTimeout(saveToLocal, 1000); }
-            finally { saveButton.disabled = false; }
+                saveButton.disabled=true; progressContainer.style.display='block'; updateProgress(5,'Pregătire...');
+                const ts=new Date().toISOString().replace(/[:.]/g,'-');
+                const filename=`${currentMediaType}_${ts}.${currentMediaType==='image'?'jpg':'webm'}`;
+                const result=await uploadToCloud(currentMediaData,filename);
+                saveMetadataToLocal({id:filename,type:currentMediaType,date:new Date().toISOString(),fileName:filename,cloudURL:result.downloadURL,cloudPath:result.fullPath});
+                updateProgress(100,'🎉 Complet!');
+                setTimeout(()=>{showSuccessMessage();showSuccess('🎂 Amintirea a fost salvată!');},500);
+            } catch(e){showError('Eroare cloud. Salvare locală...');setTimeout(saveToLocal,1000);}
+            finally{saveButton.disabled=false;}
         }
-
         function saveToLocal() {
-            progressContainer.style.display = 'block';
-            updateProgress(25, 'Salvare...');
+            progressContainer.style.display='block'; updateProgress(25,'Salvare...');
             try {
-                saveMetadataToLocal({ id: `${currentMediaType}_${Date.now()}`, type: currentMediaType, date: new Date().toISOString(), fileName: `${currentMediaType}_${Date.now()}.${currentMediaType==='image'?'jpg':'webm'}`, isLocal: true });
-                updateProgress(100, '✅ Salvat!');
-                setTimeout(() => { showSuccessMessage(); showSuccess('Salvat local!'); }, 500);
-            } catch { showError('Eroare la salvare.'); progressContainer.style.display = 'none'; }
+                saveMetadataToLocal({id:`${currentMediaType}_${Date.now()}`,type:currentMediaType,date:new Date().toISOString(),isLocal:true});
+                updateProgress(100,'✅ Salvat!');
+                setTimeout(()=>{showSuccessMessage();showSuccess('Salvat local!');},500);
+            } catch{showError('Eroare.');progressContainer.style.display='none';}
         }
-
-        function saveMetadataToLocal(meta) {
-            let arr = [];
-            try { arr = JSON.parse(localStorage.getItem('amintiriVacanță') || '[]'); } catch {}
-            arr.push(meta);
-            localStorage.setItem('amintiriVacanță', JSON.stringify(arr));
+        function saveMetadataToLocal(m) {
+            let arr=[]; try{arr=JSON.parse(localStorage.getItem('amintiriEla')||'[]');}catch{}
+            arr.push(m); localStorage.setItem('amintiriEla',JSON.stringify(arr));
         }
-
         function downloadMedia() {
             try {
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(currentMediaData);
-                link.download = `amintire_${new Date().toISOString().replace(/[:.]/g,'-')}.${currentMediaType==='image'?'jpg':'webm'}`;
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
-                showSuccess('⬇️ Descărcat cu succes!');
-            } catch { showError('Nu s-a putut descărca.'); }
+                const a=document.createElement('a');
+                a.href=URL.createObjectURL(currentMediaData);
+                a.download=`ela_${new Date().toISOString().replace(/[:.]/g,'-')}.${currentMediaType==='image'?'jpg':'webm'}`;
+                document.body.appendChild(a);a.click();document.body.removeChild(a);
+                showSuccess('⬇️ Descărcat!');
+            } catch{showError('Nu s-a putut descărca.');}
         }
-
         function showSuccessMessage() {
-            if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
-            repetatiButton.style.display = 'none'; saveButton.style.display = 'none';
-            downloadButton.style.display = 'none'; previewImage.style.display = 'none';
-            previewVideo.style.display = 'none'; progressContainer.style.display = 'none';
-            info.textContent = '🎉 Amintirea ta a fost salvată!';
-            info.style.display = 'block';
-            const bc = document.getElementById('buttonContainer');
-            bc.innerHTML = '';
-            const newBtn = document.createElement('button');
-            newBtn.textContent = '🌟 Fă o nouă amintire'; newBtn.style.background = 'linear-gradient(135deg,#f472b6,#ec4899)'; newBtn.style.color = 'white';
-            newBtn.onclick = resetApp; bc.appendChild(newBtn);
-            const galBtn = document.createElement('button');
-            galBtn.textContent = '🖼️ Vezi galeria'; galBtn.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)'; galBtn.style.color = 'white';
-            galBtn.onclick = () => window.location.href = 'gallery.html'; bc.appendChild(galBtn);
+            if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
+            [repetatiButton,saveButton,downloadButton].forEach(b=>b.style.display='none');
+            previewImage.style.display='none'; previewVideo.style.display='none'; progressContainer.style.display='none';
+            info.textContent='🎉 Amintirea cu Ela a fost salvată!'; info.style.display='block';
+            const bc=document.getElementById('buttonContainer'); bc.innerHTML='';
+            const b1=document.createElement('button'); b1.textContent='🌟 Fă o nouă amintire';
+            b1.style.cssText='background:linear-gradient(135deg,#f472b6,#ec4899);color:white;'; b1.onclick=resetApp; bc.appendChild(b1);
+            const b2=document.createElement('button'); b2.textContent='🖼️ Vezi galeria';
+            b2.style.cssText='background:linear-gradient(135deg,#4ade80,#22c55e);color:white;'; b2.onclick=()=>window.location.href='gallery.html'; bc.appendChild(b2);
         }
-
         function resetApp() {
-            chunks = []; cameraDeschisa = false; currentMediaData = null; currentMediaType = null;
-            const bc = document.getElementById('buttonContainer');
-            bc.innerHTML = '';
-            [startButton,captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b => bc.appendChild(b));
-            info.textContent = '🎂 Apasă Start pentru a începe!';
-            startButton.style.display = 'block';
-            [captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b => b.style.display = 'none');
-            previewImage.style.display = 'none'; previewVideo.style.display = 'none';
-            video.style.display = 'none'; progressContainer.style.display = 'none';
-            errorMessage.style.display = 'none'; successMessage.style.display = 'none';
-            saveButton.disabled = false; info.style.display = 'block';
+            chunks=[]; cameraDeschisa=false; currentMediaData=null; currentMediaType=null;
+            const bc=document.getElementById('buttonContainer'); bc.innerHTML='';
+            [startButton,captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>bc.appendChild(b));
+            info.textContent='🎂 Apasă Start și fă o poză cu Ela!'; info.style.display='block';
+            startButton.style.display='block';
+            [captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>b.style.display='none');
+            [previewImage,previewVideo,video].forEach(el=>el.style.display='none');
+            progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
+            saveButton.disabled=false;
         }
-
         function repeatCapture() {
-            chunks = []; currentMediaData = null;
-            if (currentStream) { video.srcObject = currentStream; video.style.display = 'block'; cameraDeschisa = true; }
-            else { activateCamera(); }
-            previewImage.style.display = 'none'; previewVideo.style.display = 'none';
-            saveButton.style.display = 'none'; downloadButton.style.display = 'none';
-            repetatiButton.style.display = 'none'; stopRecordButton.style.display = 'none';
-            captureButton.style.display = 'block'; recordButton.style.display = 'block';
-            switchCameraButton.style.display = 'block'; info.style.display = 'block';
-            info.textContent = '🎉 Fă o poză sau un video drăguț!';
-            progressContainer.style.display = 'none'; errorMessage.style.display = 'none'; successMessage.style.display = 'none';
+            chunks=[]; currentMediaData=null;
+            if(currentStream){video.srcObject=currentStream;video.style.display='block';}else{activateCamera();}
+            [previewImage,previewVideo].forEach(el=>el.style.display='none');
+            [saveButton,downloadButton,repetatiButton,stopRecordButton].forEach(b=>b.style.display='none');
+            [captureButton,recordButton,switchCameraButton].forEach(b=>b.style.display='block');
+            info.style.display='block'; info.textContent='🎉 Fă o poză sau un video drăguț cu Ela!';
+            progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
         }
 
         startButton.addEventListener('click', activateCamera);
@@ -627,19 +459,12 @@
         switchCameraButton.addEventListener('click', switchCamera);
 
         window.addEventListener('load', async () => {
-            if (!navigator.mediaDevices) showError('Browser-ul nu suportă camera.');
-            if (auth) {
-                try { await signInAnonymously(); }
-                catch { authStatus.textContent = '❌ Offline'; authStatus.style.color = '#ef4444'; }
-            } else { authStatus.textContent = '❌ Offline'; authStatus.style.color = '#ef4444'; }
+            if(!navigator.mediaDevices) showError('Browser-ul nu suportă camera.');
+            if(auth){ try{await signInAnonymously();}catch{authStatus.textContent='❌ Offline';authStatus.style.color='#ef4444';} }
+            else { authStatus.textContent='❌ Offline'; authStatus.style.color='#ef4444'; }
         });
-
-        let lastTouch = 0;
-        document.addEventListener('touchend', e => {
-            const now = Date.now();
-            if (now - lastTouch <= 300) e.preventDefault();
-            lastTouch = now;
-        }, false);
+        let lastTouch=0;
+        document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTouch<=300)e.preventDefault();lastTouch=n;},false);
     </script>
 </body>
 </html>
