@@ -2,254 +2,128 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:,">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>📸 Amintiri cu Ela</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Amintiri cu Ela</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #faf8f5;
+            --surface: rgba(255,255,255,0.75);
+            --border: rgba(0,0,0,0.07);
+            --text: #1a1a1a;
+            --text-2: #6e6e73;
+            --text-3: #aeaeb2;
+            --accent: #e8697a;
+            --green: #34c759;
+            --blue: #007aff;
+        }
+        * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+        html,body { width:100%; height:100%; overflow:hidden; font-family:'DM Sans',-apple-system,sans-serif; background:var(--bg); }
 
-        html, body {
-            width: 100%; height: 100%;
-            overflow: hidden;
-            font-family: 'Quicksand', sans-serif;
-            background: #fff8f0;
-        }
+        .bg { position:fixed; inset:0; z-index:0;
+            background: radial-gradient(ellipse 60% 40% at 15% 8%, rgba(255,200,200,0.16) 0%, transparent 70%),
+                        radial-gradient(ellipse 50% 35% at 88% 88%, rgba(200,240,210,0.14) 0%, transparent 70%);
+            background-color:var(--bg); }
 
-        .bg-gradient {
-            position: fixed; inset: 0;
-            background:
-                radial-gradient(ellipse at 10% 10%, #fce7f3 0%, transparent 40%),
-                radial-gradient(ellipse at 90% 90%, #dcfce7 0%, transparent 40%);
-            background-color: #fff8f0;
-            z-index: 0;
-        }
+        .sticker { position:fixed; pointer-events:none; z-index:1; object-fit:contain;
+            filter:drop-shadow(0 2px 8px rgba(0,0,0,0.06)); animation:stickerFloat ease-in-out infinite; }
+        @keyframes stickerFloat { 0%,100%{transform:translateY(0) rotate(var(--rot));} 50%{transform:translateY(-6px) rotate(var(--rot));} }
 
-        /* Stickers */
-        .sticker {
-            position: fixed; pointer-events: none; z-index: 1;
-            object-fit: contain;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.08));
-            animation: stickerFloat ease-in-out infinite;
-        }
-        @keyframes stickerFloat {
-            0%,100% { transform: translateY(0) rotate(var(--rot)); }
-            50%      { transform: translateY(-7px) rotate(var(--rot)); }
-        }
+        .top-bar { position:fixed; top:0; left:0; right:0; height:54px;
+            display:flex; align-items:center; justify-content:space-between; padding:0 18px; z-index:50; }
+        .back-button { display:flex; align-items:center; gap:2px; color:var(--accent);
+            font-size:0.93rem; font-weight:500; text-decoration:none; padding:6px 0; letter-spacing:-0.01em; }
+        .back-button::before { content:'‹'; font-size:1.4rem; line-height:1; }
+        #authStatus { font-size:0.68rem; font-weight:500; color:var(--text-3); letter-spacing:0.01em; }
 
-        /* Top bar */
-        .top-bar {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: 58px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 14px;
-            z-index: 50;
-        }
+        .screen { position:relative; z-index:2; width:100%; height:100%;
+            display:flex; flex-direction:column; align-items:center;
+            padding:62px 16px 16px; gap:10px; }
 
-        .back-button {
-            background: linear-gradient(135deg, #f472b6, #ec4899);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-decoration: none;
-            box-shadow: 0 3px 10px rgba(236,72,153,0.35);
-        }
+        .page-header { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+        .header-animal { width:clamp(34px,9vw,46px); height:clamp(34px,9vw,46px); object-fit:contain;
+            filter:drop-shadow(0 3px 6px rgba(0,0,0,0.07)); animation:bob 3s ease-in-out infinite; }
+        @keyframes bob { 0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
+        h1 { font-family:'DM Serif Display',serif; font-size:clamp(1.25rem,5vw,1.65rem);
+            font-weight:400; color:var(--text); letter-spacing:-0.025em; }
 
-        #authStatus {
-            font-size: 0.7rem;
-            color: #6b7280;
-            background: white;
-            padding: 5px 12px;
-            border-radius: 50px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 600;
-        }
+        .media-area { flex:1; width:100%; position:relative; min-height:0; border-radius:22px; overflow:hidden; }
 
-        /* Main screen */
-        .screen {
-            position: relative; z-index: 2;
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between;
-            padding: 66px 16px 14px;
-        }
+        #video { width:100%; height:100%; object-fit:cover; border-radius:22px; display:none; }
+        #previewVideo { width:100%; height:100%; object-fit:contain; border-radius:22px; background:#000; display:none; }
+        #previewImage { width:100%; height:100%; object-fit:cover; border-radius:22px; display:none; }
 
-        /* Header */
-        .page-header {
-            display: flex; align-items: center; gap: 10px;
-            animation: bounceIn 0.6s ease-out;
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.7); opacity: 0; }
-            70% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .header-animal {
-            width: clamp(44px, 12vw, 60px);
-            height: clamp(44px, 12vw, 60px);
-            object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-            animation: gentleBounce 2.4s ease-in-out infinite;
-        }
-        @keyframes gentleBounce {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(1.3rem, 5vw, 1.8rem);
-            font-weight: 800;
-            color: #be185d;
-        }
+        #tapToStart { position:absolute; inset:0; border-radius:22px;
+            border:1.5px dashed rgba(0,0,0,0.10); background:var(--surface);
+            backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:8px; cursor:pointer; transition:background 0.18s; }
+        #tapToStart:active { background:rgba(255,255,255,0.9); }
+        .tap-icon { font-size:clamp(2.2rem,9vw,3rem); animation:bob 2.5s ease-in-out infinite; line-height:1; }
+        .tap-text { font-size:clamp(0.88rem,3.2vw,1rem); font-weight:500; color:var(--text);
+            text-align:center; padding:0 24px; letter-spacing:-0.015em; }
+        .tap-sub { font-size:clamp(0.72rem,2.4vw,0.8rem); color:var(--text-3); font-weight:400; }
 
-        /* Media area — takes remaining space */
-        .media-area {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin: 8px 0;
-            min-height: 0;
-        }
+        #info { font-size:0.86rem; font-weight:400; color:var(--text-2); text-align:center;
+            padding:10px 16px; background:var(--surface); backdrop-filter:blur(8px);
+            border-radius:12px; width:100%; border:1px solid var(--border);
+            display:none; letter-spacing:-0.01em; }
 
-        #video {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 20px;
-            border: 3px solid #f9a8d4;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            display: none;
-        }
-        #previewVideo {
-            width: 100%; height: 100%;
-            object-fit: contain;
-            border-radius: 20px;
-            border: 3px solid #86efac;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            display: none;
-        }
-        #previewImage {
-            max-width: 100%; max-height: 100%;
-            object-fit: contain;
-            border-radius: 20px;
-            border: 3px solid #86efac;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            display: none;
-        }
+        #progressContainer { width:100%; background:rgba(0,0,0,0.05); border-radius:50px;
+            display:none; overflow:hidden; height:3px; flex-shrink:0; }
+        #progressBar { height:3px; background:var(--accent); border-radius:50px; width:0%; transition:width 0.4s ease; }
 
-        #tapToStart {
-            position: absolute; inset: 0;
-            border-radius: 20px;
-            border: 2px dashed #f9a8d4;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-        }
-        #tapToStart:active { background: #fdf2f8; transform: scale(0.98); }
-        .tap-icon { font-size: clamp(2.8rem, 11vw, 4rem); animation: gentleBounce 2s ease-in-out infinite; }
-        .tap-text {
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(0.9rem, 3.5vw, 1.1rem);
-            font-weight: 700; color: #ec4899; text-align: center; padding: 0 20px;
-        }
-        .tap-sub { font-size: clamp(0.7rem, 2.5vw, 0.82rem); color: #9ca3af; font-weight: 600; }
+        #buttonContainer { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; width:100%; flex-shrink:0; }
 
-        #info {
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(0.85rem, 3.2vw, 1rem);
-            font-weight: 700; color: #9ca3af;
-            text-align: center; padding: 16px;
-            background: white; border-radius: 16px;
-            width: 100%; border: 2px dashed #86efac;
-            display: none;
-        }
+        button { font-family:'DM Sans',-apple-system,sans-serif; font-weight:500;
+            font-size:clamp(0.82rem,2.8vw,0.9rem); padding:11px 22px;
+            border:none; border-radius:50px; cursor:pointer;
+            transition:opacity 0.13s, transform 0.13s; letter-spacing:-0.01em; line-height:1.2; }
+        button:active { opacity:0.68; transform:scale(0.96); }
+        button:disabled { opacity:0.32; cursor:not-allowed; }
 
-        /* Progress */
-        #progressContainer {
-            width: 100%; background: #f3f4f6;
-            border-radius: 50px; display: none; overflow: hidden;
-        }
-        #progressBar {
-            height: 22px;
-            background: linear-gradient(90deg, #f472b6, #4ade80, #60a5fa);
-            background-size: 200% 100%;
-            animation: shine 1.5s linear infinite;
-            border-radius: 50px;
-            text-align: center; line-height: 22px;
-            color: white;
-            font-family: 'Baloo 2', cursive; font-size: 0.75rem; font-weight: 700;
-            width: 0%; transition: width 0.3s ease;
-        }
-        @keyframes shine { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .btn-dark   { background:var(--text);    color:#fff; }
+        .btn-accent { background:var(--accent);  color:#fff; }
+        .btn-green  { background:var(--green);   color:#fff; }
+        .btn-soft   { background:rgba(0,0,0,0.055); color:var(--text); }
+        .btn-blue   { background:rgba(0,122,255,0.1); color:var(--blue); }
+        .btn-pink   { background:rgba(232,105,122,0.1); color:var(--accent); }
 
-        /* Buttons */
-        #buttonContainer {
-            display: flex; flex-wrap: wrap;
-            justify-content: center; gap: 8px;
-            width: 100%;
-        }
-
-        button {
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            font-size: clamp(0.8rem, 3vw, 0.95rem);
-            padding: 10px 18px;
-            border: none; border-radius: 50px; cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        button:active { transform: scale(0.95); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        #startButton    { background: linear-gradient(135deg,#f472b6,#ec4899); color:white; }
-        #captureButton  { background: linear-gradient(135deg,#fb923c,#f97316); color:white; }
-        #recordButton   { background: linear-gradient(135deg,#f87171,#ef4444); color:white; }
-        #stopRecordButton{ background: linear-gradient(135deg,#6b7280,#4b5563); color:white; }
-        #repetatiButton { background: linear-gradient(135deg,#a78bfa,#8b5cf6); color:white; }
-        #saveButton     { background: linear-gradient(135deg,#4ade80,#22c55e); color:white; }
-        #downloadButton { background: linear-gradient(135deg,#60a5fa,#3b82f6); color:white; }
-        #switchCameraButton{ background: linear-gradient(135deg,#fbbf24,#f59e0b); color:white; }
-
-        /* Messages */
-        .msg {
-            width: 100%; text-align: center;
-            font-size: 0.85rem; font-weight: 600;
-            padding: 8px 14px; border-radius: 12px;
-            display: none;
-        }
-        .msg-error  { color:#ef4444; background:#fef2f2; border:1px solid #fecaca; }
-        .msg-success{ color:#16a34a; background:#f0fdf4; border:1px solid #bbf7d0; }
+        .msg { width:100%; text-align:center; flex-shrink:0; font-size:0.82rem; font-weight:500;
+            padding:9px 14px; border-radius:10px; display:none; letter-spacing:-0.01em; }
+        .msg-error   { color:#c0392b; background:rgba(192,57,43,0.07); border:1px solid rgba(192,57,43,0.12); }
+        .msg-success { color:#1a7a36; background:rgba(52,199,89,0.1); border:1px solid rgba(52,199,89,0.18); }
     </style>
 </head>
 <body>
-    <div class="bg-gradient"></div>
+    <div class="bg"></div>
 
     <!-- Stickers -->
-    <img src="3e637e7a-e1e1-49e3-8b77-fcd5dc61ca5b.png" class="sticker" style="width:50px;top:8%;left:4%;--rot:-18deg;animation-duration:3.2s;opacity:0.35;">
-    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:55px;top:6%;right:5%;--rot:22deg;animation-duration:2.8s;animation-delay:0.5s;opacity:0.35;">
-    <img src="2a2a47c3-043b-4c5f-a935-380042c91e17.png" class="sticker" style="width:44px;bottom:22%;left:3%;--rot:30deg;animation-duration:3.5s;animation-delay:1s;opacity:0.32;">
-    <img src="65189b18-95f1-47fa-9dd1-a1665ad10f48.png" class="sticker" style="width:48px;bottom:18%;right:3%;--rot:-25deg;animation-duration:3s;animation-delay:0.3s;opacity:0.32;">
+    <img src="61e5c12a-b99c-4121-bc68-9a092b484377.png" class="sticker" style="width:46px;top:3%;left:7%;--rot:-22deg;animation-duration:3.1s;animation-delay:0s;opacity:0.35;">
+    <img src="8253a088-3266-48ce-812d-2e44ced702d3.png" class="sticker" style="width:58px;top:5%;left:60%;--rot:14deg;animation-duration:2.8s;animation-delay:0.7s;opacity:0.35;">
+    <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" class="sticker" style="width:46px;top:8%;left:33%;--rot:-8deg;animation-duration:3.5s;animation-delay:0.3s;opacity:0.30;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:52px;top:12%;left:80%;--rot:-30deg;animation-duration:2.6s;animation-delay:1.1s;opacity:0.33;">
+    <img src="3e637e7a-e1e1-49e3-8b77-fcd5dc61ca5b.png" class="sticker" style="width:62px;top:22%;left:2%;--rot:20deg;animation-duration:4s;animation-delay:0.5s;opacity:0.30;">
+    <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="sticker" style="width:44px;top:26%;left:88%;--rot:-15deg;animation-duration:3.2s;animation-delay:1.4s;opacity:0.30;">
+    <img src="fbf06e1a-ed14-4ac5-9dfd-ca9a3d79e6d4.png" class="sticker" style="width:56px;top:42%;left:1%;--rot:35deg;animation-duration:2.9s;animation-delay:0.2s;opacity:0.28;">
+    <img src="2a2a47c3-043b-4c5f-a935-380042c91e17.png" class="sticker" style="width:42px;top:44%;left:88%;--rot:-18deg;animation-duration:3.6s;animation-delay:0.9s;opacity:0.30;">
+    <img src="65189b18-95f1-47fa-9dd1-a1665ad10f48.png" class="sticker" style="width:58px;top:60%;left:2%;--rot:28deg;animation-duration:3.3s;animation-delay:1.6s;opacity:0.28;">
+    <img src="e80ac0ef-d369-4110-b0d1-7228cd6d5ef3.png" class="sticker" style="width:48px;top:62%;left:85%;--rot:-10deg;animation-duration:2.7s;animation-delay:0.4s;opacity:0.30;">
+    <img src="05d4c5cf-73e5-4da8-baae-24bb68af598b.png" class="sticker" style="width:44px;top:76%;left:6%;--rot:40deg;animation-duration:3.8s;animation-delay:1.2s;opacity:0.30;">
+    <img src="d3f58b6a-b357-400b-8ad1-885dfd0e2900.png" class="sticker" style="width:48px;top:78%;left:80%;--rot:-25deg;animation-duration:2.5s;animation-delay:1s;opacity:0.28;">
+    <img src="8253a088-3266-48ce-812d-2e44ced702d3.png" class="sticker" style="width:52px;top:88%;left:4%;--rot:12deg;animation-duration:3.4s;animation-delay:0.8s;opacity:0.30;">
+    <img src="b5591582-6b09-4735-b732-c1481db7e05a.png" class="sticker" style="width:40px;top:90%;left:75%;--rot:-35deg;animation-duration:3.1s;animation-delay:1.5s;opacity:0.28;">
 
     <div class="top-bar">
-        <a href="index.html" class="back-button">← Înapoi</a>
-        <div id="authStatus">Conectare...</div>
+        <a href="index.html" class="back-button">Înapoi</a>
+        <div id="authStatus"></div>
     </div>
 
     <div class="screen">
-
         <div class="page-header">
             <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="header-animal" alt="">
-            <h1>📸 Ziua Elei!</h1>
+            <h1>Ziua Elei</h1>
         </div>
 
         <div class="media-area">
@@ -261,26 +135,24 @@
             <div id="tapToStart">
                 <span class="tap-icon">📸</span>
                 <span class="tap-text">Atinge pentru a porni camera</span>
-                <span class="tap-sub">🎂 Fă o amintire cu Ela!</span>
+                <span class="tap-sub">Fă o amintire cu Ela</span>
             </div>
         </div>
 
         <div class="msg msg-error"   id="errorMessage"></div>
         <div class="msg msg-success" id="successMessage"></div>
-
-        <div id="progressContainer"><div id="progressBar">0%</div></div>
+        <div id="progressContainer"><div id="progressBar"></div></div>
 
         <div id="buttonContainer">
-            <button id="startButton" style="display:none;">🌟 Start</button>
-            <button id="captureButton"    style="display:none;">📷 Capturează</button>
-            <button id="recordButton"     style="display:none;">🎥 Înregistrează</button>
-            <button id="stopRecordButton" style="display:none;">⏹ Stop</button>
-            <button id="repetatiButton"   style="display:none;">🔄 Repetă</button>
-            <button id="saveButton"       style="display:none;">💾 Salvează</button>
-            <button id="downloadButton"   style="display:none;">⬇️ Descarcă</button>
-            <button id="switchCameraButton" style="display:none;">🔄 Camera</button>
+            <button id="startButton"        class="btn-dark"   style="display:none;">Start</button>
+            <button id="captureButton"      class="btn-dark"   style="display:none;">Fotografiază</button>
+            <button id="recordButton"       class="btn-accent" style="display:none;">Înregistrează</button>
+            <button id="stopRecordButton"   class="btn-soft"   style="display:none;">Stop</button>
+            <button id="repetatiButton"     class="btn-soft"   style="display:none;">Încearcă din nou</button>
+            <button id="saveButton"         class="btn-green"  style="display:none;">Salvează</button>
+            <button id="downloadButton"     class="btn-blue"   style="display:none;">Descarcă</button>
+            <button id="switchCameraButton" class="btn-soft"   style="display:none;">Schimbă camera</button>
         </div>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
@@ -288,207 +160,132 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
-            authDomain: "ziua-ela.firebaseapp.com",
-            projectId: "ziua-ela",
-            storageBucket: "ziua-ela.firebasestorage.app",
-            messagingSenderId: "180855324306",
-            appId: "1:180855324306:web:bb5f4aeabb1ca1847e304b"
+            apiKey:"AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
+            authDomain:"ziua-ela.firebaseapp.com", projectId:"ziua-ela",
+            storageBucket:"ziua-ela.firebasestorage.app",
+            messagingSenderId:"180855324306", appId:"1:180855324306:web:bb5f4aeabb1ca1847e304b"
         };
-        let firebaseApp, storage, auth, isAuthenticated = false;
-        firebaseApp = firebase.initializeApp(firebaseConfig); storage = firebase.storage(); auth = firebase.auth();
+        let firebaseApp,storage,auth,isAuthenticated=false;
+        firebaseApp=firebase.initializeApp(firebaseConfig);storage=firebase.storage();auth=firebase.auth();
 
-        let mediaRecorder, chunks = [], useFrontCamera = true, currentStream = null;
-        let currentMediaType = null, currentMediaData = null, cameraDeschisa = false;
+        let mediaRecorder,chunks=[],useFrontCamera=true,currentStream=null;
+        let currentMediaType=null,currentMediaData=null,cameraDeschisa=false;
 
-        const video           = document.getElementById('video');
-        const canvas          = document.getElementById('canvas');
-        const startButton     = document.getElementById('startButton');
-        const captureButton   = document.getElementById('captureButton');
-        const recordButton    = document.getElementById('recordButton');
-        const stopRecordButton= document.getElementById('stopRecordButton');
-        const repetatiButton  = document.getElementById('repetatiButton');
-        const saveButton      = document.getElementById('saveButton');
-        const downloadButton  = document.getElementById('downloadButton');
-        const switchCameraButton = document.getElementById('switchCameraButton');
-        const previewImage    = document.getElementById('previewImage');
-        const previewVideo    = document.getElementById('previewVideo');
-        const info            = document.getElementById('info');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar     = document.getElementById('progressBar');
-        const errorMessage    = document.getElementById('errorMessage');
-        const successMessage  = document.getElementById('successMessage');
-        const authStatus      = document.getElementById('authStatus');
+        const video=document.getElementById('video'),canvas=document.getElementById('canvas');
+        const startButton=document.getElementById('startButton'),captureButton=document.getElementById('captureButton');
+        const recordButton=document.getElementById('recordButton'),stopRecordButton=document.getElementById('stopRecordButton');
+        const repetatiButton=document.getElementById('repetatiButton'),saveButton=document.getElementById('saveButton');
+        const downloadButton=document.getElementById('downloadButton'),switchCameraButton=document.getElementById('switchCameraButton');
+        const previewImage=document.getElementById('previewImage'),previewVideo=document.getElementById('previewVideo');
+        const info=document.getElementById('info'),progressContainer=document.getElementById('progressContainer');
+        const progressBar=document.getElementById('progressBar'),errorMessage=document.getElementById('errorMessage');
+        const successMessage=document.getElementById('successMessage'),authStatus=document.getElementById('authStatus');
 
-        function getSupportedMimeType() {
-            const types = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4;codecs=h264','video/mp4'];
-            for (let t of types) { if (MediaRecorder.isTypeSupported(t)) return t; }
-            return '';
-        }
-        function getRecorderOptions(m) {
-            const o = {}; if(m) o.mimeType=m;
-            o.videoBitsPerSecond=3000000; o.audioBitsPerSecond=128000; return o;
-        }
-        async function signInAnonymously() {
-            const c = await auth.signInAnonymously();
-            isAuthenticated = true;
-            authStatus.textContent = '✅ Conectat'; authStatus.style.color = '#16a34a';
-            return c.user;
-        }
-        function showError(msg) { errorMessage.textContent=msg; errorMessage.style.display='block'; successMessage.style.display='none'; setTimeout(()=>errorMessage.style.display='none',5000); }
-        function showSuccess(msg) { successMessage.textContent=msg; successMessage.style.display='block'; errorMessage.style.display='none'; setTimeout(()=>successMessage.style.display='none',5000); }
-        function updateProgress(p,t) { progressBar.style.width=p+'%'; progressBar.textContent=t||p+'%'; }
-        function dataURLtoBlob(d) {
-            const arr=d.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]);
-            let n=bstr.length; const u=new Uint8Array(n);
-            while(n--) u[n]=bstr.charCodeAt(n); return new Blob([u],{type:mime});
-        }
+        function getSupportedMimeType(){const t=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'];for(let x of t)if(MediaRecorder.isTypeSupported(x))return x;return '';}
+        function getRecorderOptions(m){const o={};if(m)o.mimeType=m;o.videoBitsPerSecond=3000000;o.audioBitsPerSecond=128000;return o;}
+        async function signInAnonymously(){const c=await auth.signInAnonymously();isAuthenticated=true;authStatus.textContent='Conectat';return c.user;}
+        function showError(msg){errorMessage.textContent=msg;errorMessage.style.display='block';successMessage.style.display='none';setTimeout(()=>errorMessage.style.display='none',5000);}
+        function showSuccess(msg){successMessage.textContent=msg;successMessage.style.display='block';errorMessage.style.display='none';setTimeout(()=>successMessage.style.display='none',5000);}
+        function updateProgress(p){progressBar.style.width=p+'%';}
+        function dataURLtoBlob(d){const arr=d.split(','),mime=arr[0].match(/:(.*?);/)[1],bstr=atob(arr[1]);let n=bstr.length;const u=new Uint8Array(n);while(n--)u[n]=bstr.charCodeAt(n);return new Blob([u],{type:mime});}
 
-        function activateCamera() {
-            const c = { video:{facingMode:useFrontCamera?'user':'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:24}}, audio:{echoCancellation:true,channelCount:1} };
-            navigator.mediaDevices.getUserMedia(c).then(stream => {
-                currentStream=stream; video.style.transform='rotateY(180deg)';
-                video.srcObject=stream; video.play(); video.style.display='block';
-                cameraDeschisa=true; startButton.style.display='none';
+        function activateCamera(){
+            const c={video:{facingMode:useFrontCamera?'user':'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:24}},audio:{echoCancellation:true,channelCount:1}};
+            navigator.mediaDevices.getUserMedia(c).then(stream=>{
+                currentStream=stream;video.style.transform=useFrontCamera?'rotateY(180deg)':'none';
+                video.srcObject=stream;video.play();video.style.display='block';
+                cameraDeschisa=true;startButton.style.display='none';
                 document.getElementById('tapToStart').style.display='none';
-                captureButton.style.display='block'; recordButton.style.display='block'; switchCameraButton.style.display='block';
+                captureButton.style.display='block';recordButton.style.display='block';switchCameraButton.style.display='block';
             }).catch(()=>showError('Nu s-a putut accesa camera.'));
         }
-        function switchCamera() {
-            useFrontCamera=!useFrontCamera;
-            if(currentStream) currentStream.getTracks().forEach(t=>t.stop());
-            activateCamera();
-        }
-        function takePicture() {
-            recordButton.style.display='none';
-            try {
-                canvas.width=video.videoWidth; canvas.height=video.videoHeight;
-                const ctx=canvas.getContext('2d');
+        function switchCamera(){useFrontCamera=!useFrontCamera;if(currentStream)currentStream.getTracks().forEach(t=>t.stop());activateCamera();}
+        function takePicture(){
+            recordButton.style.display='none';switchCameraButton.style.display='none';
+            try{canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext('2d');
                 if(useFrontCamera){ctx.translate(canvas.width,0);ctx.scale(-1,1);}
-                ctx.drawImage(video,0,0,canvas.width,canvas.height);
-                if(useFrontCamera) ctx.setTransform(1,0,0,1,0,0);
-                const url=canvas.toDataURL('image/jpeg',0.6);
-                currentMediaData=dataURLtoBlob(url); currentMediaType='image';
-                showPreview(url,'image');
-            } catch(e){showError('Nu s-a putut captura.');}
+                ctx.drawImage(video,0,0,canvas.width,canvas.height);if(useFrontCamera)ctx.setTransform(1,0,0,1,0,0);
+                const url=canvas.toDataURL('image/jpeg',0.85);currentMediaData=dataURLtoBlob(url);currentMediaType='image';showPreview(url,'image');
+            }catch(e){showError('Nu s-a putut captura.');}
         }
-        function startRecording() {
-            chunks=[]; captureButton.style.display='none';
-            try {
-                const m=getSupportedMimeType();
-                mediaRecorder=new MediaRecorder(video.srcObject,getRecorderOptions(m));
+        function startRecording(){chunks=[];captureButton.style.display='none';switchCameraButton.style.display='none';
+            try{const m=getSupportedMimeType();mediaRecorder=new MediaRecorder(video.srcObject,getRecorderOptions(m));
                 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-                mediaRecorder.onstop=()=>{
-                    const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'});
-                    currentMediaData=blob; currentMediaType='video';
-                    showPreview(URL.createObjectURL(blob),'video');
-                };
-                mediaRecorder.start(); stopRecordButton.style.display='block'; recordButton.style.display='none';
+                mediaRecorder.onstop=()=>{const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'});currentMediaData=blob;currentMediaType='video';showPreview(URL.createObjectURL(blob),'video');};
+                mediaRecorder.start();stopRecordButton.style.display='block';recordButton.style.display='none';
                 setTimeout(()=>{if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();},6000);
-            } catch(e){showError('Nu s-a putut înregistra.');captureButton.style.display='block';}
+            }catch(e){showError('Nu s-a putut înregistra.');captureButton.style.display='block';}
         }
-        function stopRecording() { if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop(); stopRecordButton.style.display='none'; }
-        function showPreview(src,type) {
-            video.style.display='none'; captureButton.style.display='none'; recordButton.style.display='none';
-            info.style.display='none'; switchCameraButton.style.display='none';
+        function stopRecording(){if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();stopRecordButton.style.display='none';}
+        function showPreview(src,type){
+            video.style.display='none';captureButton.style.display='none';recordButton.style.display='none';
+            info.style.display='none';switchCameraButton.style.display='none';
             if(type==='image'){previewImage.src=src;previewImage.style.display='block';previewVideo.style.display='none';}
             else{previewVideo.src=src;previewVideo.style.display='block';previewImage.style.display='none';}
-            saveButton.style.display='block'; downloadButton.style.display='block'; repetatiButton.style.display='block';
+            saveButton.style.display='block';downloadButton.style.display='block';repetatiButton.style.display='block';
         }
-        async function uploadToCloud(blob,filename) {
-            const ref=storage.ref().child(`amintiri/${filename}`);
-            const task=ref.put(blob);
-            return new Promise((res,rej)=>{
-                task.on('state_changed',
-                    s=>updateProgress((s.bytesTransferred/s.totalBytes)*100,`Încărcare: ${Math.round((s.bytesTransferred/s.totalBytes)*100)}%`),
-                    rej,
-                    async()=>{try{const url=await task.snapshot.ref.getDownloadURL();res({downloadURL:url,fullPath:task.snapshot.ref.fullPath});}catch(e){rej(e);}}
-                );
-            });
+        async function uploadToCloud(blob,filename){
+            const ref=storage.ref().child(`amintiri/${filename}`),task=ref.put(blob);
+            return new Promise((res,rej)=>task.on('state_changed',s=>updateProgress((s.bytesTransferred/s.totalBytes)*100),rej,async()=>{try{const url=await task.snapshot.ref.getDownloadURL();res({downloadURL:url,fullPath:task.snapshot.ref.fullPath});}catch(e){rej(e);}}));
         }
-        async function saveToCloud() {
+        async function saveToCloud(){
             if(!currentMediaData){showError('Nu există date.');return;}
-            if(!isAuthenticated){try{await signInAnonymously();}catch{showError('Offline - salvare locală...');setTimeout(saveToLocal,1000);return;}}
-            try {
-                saveButton.disabled=true; progressContainer.style.display='block'; updateProgress(5,'Pregătire...');
+            if(!isAuthenticated){try{await signInAnonymously();}catch{showError('Offline – salvare locală...');setTimeout(saveToLocal,1000);return;}}
+            try{saveButton.disabled=true;progressContainer.style.display='block';updateProgress(5);
                 const ts=new Date().toISOString().replace(/[:.]/g,'-');
                 const filename=`${currentMediaType}_${ts}.${currentMediaType==='image'?'jpg':'webm'}`;
                 const result=await uploadToCloud(currentMediaData,filename);
                 saveMetadataToLocal({id:filename,type:currentMediaType,date:new Date().toISOString(),fileName:filename,cloudURL:result.downloadURL,cloudPath:result.fullPath});
-                updateProgress(100,'🎉 Complet!');
-                setTimeout(()=>{showSuccessMessage();showSuccess('🎂 Amintirea a fost salvată!');},500);
-            } catch(e){showError('Eroare cloud. Salvare locală...');setTimeout(saveToLocal,1000);}
+                updateProgress(100);setTimeout(()=>{showSuccessMessage();showSuccess('Amintirea a fost salvată!');},400);
+            }catch(e){showError('Eroare cloud. Salvare locală...');setTimeout(saveToLocal,1000);}
             finally{saveButton.disabled=false;}
         }
-        function saveToLocal() {
-            progressContainer.style.display='block'; updateProgress(25,'Salvare...');
-            try {
-                saveMetadataToLocal({id:`${currentMediaType}_${Date.now()}`,type:currentMediaType,date:new Date().toISOString(),isLocal:true});
-                updateProgress(100,'✅ Salvat!');
-                setTimeout(()=>{showSuccessMessage();showSuccess('Salvat local!');},500);
-            } catch{showError('Eroare.');progressContainer.style.display='none';}
+        function saveToLocal(){progressContainer.style.display='block';updateProgress(40);
+            try{saveMetadataToLocal({id:`${currentMediaType}_${Date.now()}`,type:currentMediaType,date:new Date().toISOString(),isLocal:true});updateProgress(100);setTimeout(()=>{showSuccessMessage();showSuccess('Salvat local!');},400);}
+            catch{showError('Eroare.');progressContainer.style.display='none';}
         }
-        function saveMetadataToLocal(m) {
-            let arr=[]; try{arr=JSON.parse(localStorage.getItem('amintiriEla')||'[]');}catch{}
-            arr.push(m); localStorage.setItem('amintiriEla',JSON.stringify(arr));
-        }
-        function downloadMedia() {
-            try {
-                const a=document.createElement('a');
-                a.href=URL.createObjectURL(currentMediaData);
-                a.download=`ela_${new Date().toISOString().replace(/[:.]/g,'-')}.${currentMediaType==='image'?'jpg':'webm'}`;
-                document.body.appendChild(a);a.click();document.body.removeChild(a);
-                showSuccess('⬇️ Descărcat!');
-            } catch{showError('Nu s-a putut descărca.');}
-        }
-        function showSuccessMessage() {
+        function saveMetadataToLocal(m){let arr=[];try{arr=JSON.parse(localStorage.getItem('amintiriEla')||'[]');}catch{}arr.push(m);localStorage.setItem('amintiriEla',JSON.stringify(arr));}
+        function downloadMedia(){try{const a=document.createElement('a');a.href=URL.createObjectURL(currentMediaData);a.download=`ela_${new Date().toISOString().replace(/[:.]/g,'-')}.${currentMediaType==='image'?'jpg':'webm'}`;document.body.appendChild(a);a.click();document.body.removeChild(a);showSuccess('Descărcat!');}catch{showError('Nu s-a putut descărca.');}}
+        function showSuccessMessage(){
             if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
             [repetatiButton,saveButton,downloadButton].forEach(b=>b.style.display='none');
-            previewImage.style.display='none'; previewVideo.style.display='none'; progressContainer.style.display='none';
-            info.textContent='🎉 Amintirea cu Ela a fost salvată!'; info.style.display='block';
-            const bc=document.getElementById('buttonContainer'); bc.innerHTML='';
-            const b1=document.createElement('button'); b1.textContent='🌟 Fă o nouă amintire';
-            b1.style.cssText='background:linear-gradient(135deg,#f472b6,#ec4899);color:white;'; b1.onclick=resetApp; bc.appendChild(b1);
-            const b2=document.createElement('button'); b2.textContent='🖼️ Vezi galeria';
-            b2.style.cssText='background:linear-gradient(135deg,#4ade80,#22c55e);color:white;'; b2.onclick=()=>window.location.href='gallery.html'; bc.appendChild(b2);
+            previewImage.style.display='none';previewVideo.style.display='none';progressContainer.style.display='none';
+            info.textContent='Amintirea cu Ela a fost salvată 🎉';info.style.display='block';
+            const bc=document.getElementById('buttonContainer');bc.innerHTML='';
+            const b1=document.createElement('button');b1.textContent='Fă o nouă amintire';b1.className='btn-dark';b1.onclick=resetApp;bc.appendChild(b1);
+            const b2=document.createElement('button');b2.textContent='Vezi albumul';b2.className='btn-soft';b2.onclick=()=>window.location.href='gallery.html';bc.appendChild(b2);
         }
-        function resetApp() {
-            chunks=[]; cameraDeschisa=false; currentMediaData=null; currentMediaType=null;
-            const bc=document.getElementById('buttonContainer'); bc.innerHTML='';
+        function resetApp(){chunks=[];cameraDeschisa=false;currentMediaData=null;currentMediaType=null;
+            const bc=document.getElementById('buttonContainer');bc.innerHTML='';
             [startButton,captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>bc.appendChild(b));
-            document.getElementById('tapToStart').style.display='flex';
-            info.style.display='none';
-            startButton.style.display='none';
+            document.getElementById('tapToStart').style.display='flex';info.style.display='none';startButton.style.display='none';
             [captureButton,recordButton,stopRecordButton,repetatiButton,saveButton,downloadButton,switchCameraButton].forEach(b=>b.style.display='none');
             [previewImage,previewVideo,video].forEach(el=>el.style.display='none');
-            progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
-            saveButton.disabled=false;
+            progressContainer.style.display='none';errorMessage.style.display='none';successMessage.style.display='none';saveButton.disabled=false;
         }
-        function repeatCapture() {
-            chunks=[]; currentMediaData=null;
+        function repeatCapture(){chunks=[];currentMediaData=null;
             if(currentStream){video.srcObject=currentStream;video.style.display='block';}else{activateCamera();}
             [previewImage,previewVideo].forEach(el=>el.style.display='none');
             [saveButton,downloadButton,repetatiButton,stopRecordButton].forEach(b=>b.style.display='none');
             [captureButton,recordButton,switchCameraButton].forEach(b=>b.style.display='block');
-            info.style.display='none';
-            document.getElementById('tapToStart').style.display='none';
-            progressContainer.style.display='none'; errorMessage.style.display='none'; successMessage.style.display='none';
+            info.style.display='none';document.getElementById('tapToStart').style.display='none';
+            progressContainer.style.display='none';errorMessage.style.display='none';successMessage.style.display='none';
         }
 
-        startButton.addEventListener('click', activateCamera);
-        document.getElementById('tapToStart').addEventListener('click', activateCamera);
-        captureButton.addEventListener('click', takePicture);
-        recordButton.addEventListener('click', startRecording);
-        stopRecordButton.addEventListener('click', stopRecording);
-        repetatiButton.addEventListener('click', repeatCapture);
-        saveButton.addEventListener('click', saveToCloud);
-        downloadButton.addEventListener('click', downloadMedia);
-        switchCameraButton.addEventListener('click', switchCamera);
+        startButton.addEventListener('click',activateCamera);
+        document.getElementById('tapToStart').addEventListener('click',activateCamera);
+        captureButton.addEventListener('click',takePicture);
+        recordButton.addEventListener('click',startRecording);
+        stopRecordButton.addEventListener('click',stopRecording);
+        repetatiButton.addEventListener('click',repeatCapture);
+        saveButton.addEventListener('click',saveToCloud);
+        downloadButton.addEventListener('click',downloadMedia);
+        switchCameraButton.addEventListener('click',switchCamera);
 
-        window.addEventListener('load', async () => {
-            if(!navigator.mediaDevices) showError('Browser-ul nu suportă camera.');
-            if(auth){ try{await signInAnonymously();}catch{authStatus.textContent='❌ Offline';authStatus.style.color='#ef4444';} }
-            else { authStatus.textContent='❌ Offline'; authStatus.style.color='#ef4444'; }
+        window.addEventListener('load',async()=>{
+            if(!navigator.mediaDevices)showError('Browser-ul nu suportă camera.');
+            if(auth){try{await signInAnonymously();}catch{authStatus.textContent='Offline';authStatus.style.color='#c0392b';}}
+            else{authStatus.textContent='Offline';authStatus.style.color='#c0392b';}
         });
         let lastTouch=0;
         document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTouch<=300)e.preventDefault();lastTouch=n;},false);
