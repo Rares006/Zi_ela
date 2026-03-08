@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" href="data:,">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Albumul Elarei</title>
+    <title>Albumul Elei</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <style>
         :root{--bg:#faf8f5;--surface:rgba(255,255,255,0.75);--border:rgba(0,0,0,0.07);--text:#1a1a1a;--text-2:#6e6e73;--text-3:#aeaeb2;--accent:#e8697a;--green:#34c759;--blue:#007aff;}
@@ -134,13 +134,13 @@
         <div class="modal-actions"><button class="modal-action-btn btn-dl" id="modalDownloadBtn">↓ Descarcă</button></div>
     </div>
 
+    <script src="firebase-config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
     <script>
-        const firebaseConfig={apiKey:"AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",authDomain:"ziua-ela.firebaseapp.com",projectId:"ziua-ela",storageBucket:"ziua-ela.firebasestorage.app",messagingSenderId:"180855324306",appId:"1:180855324306:web:bb5f4aeabb1ca1847e304b"};
         let firebaseApp,storage,auth,isAuthenticated=false;
-        try{firebaseApp=firebase.initializeApp(firebaseConfig);storage=firebase.storage();auth=firebase.auth();}catch(e){}
+        firebaseApp=firebase.initializeApp(window.firebaseConfig);storage=firebase.storage();auth=firebase.auth();
         let allMemories=[],filteredMemories=[],currentFilter='all',currentModalIndex=0;
         const galleryWrapper=document.getElementById('galleryWrapper'),galleryContainer=document.getElementById('galleryContainer');
         const emptyMessage=document.getElementById('emptyMessage'),loadingMessage=document.getElementById('loadingMessage');

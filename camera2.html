@@ -123,7 +123,7 @@
     <div class="screen">
         <div class="page-header">
             <img src="64921c0f-9b1b-443f-a621-ad8bd47c8949.png" class="header-animal" alt="">
-            <h1>Ziua Elarei</h1>
+            <h1>Ziua Elei</h1>
         </div>
 
         <div class="media-area">
@@ -135,6 +135,7 @@
             <div id="tapToStart">
                 <span class="tap-icon">📸</span>
                 <span class="tap-text">Atinge pentru a porni camera</span>
+                <span class="tap-sub">Fă o amintire cu Ela</span>
             </div>
         </div>
 
@@ -154,18 +155,13 @@
         </div>
     </div>
 
+    <script src="firebase-config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey:"AIzaSyD71N51FaHL7lvjQ3r3cVqCqw1fhrrr4Ng",
-            authDomain:"ziua-ela.firebaseapp.com", projectId:"ziua-ela",
-            storageBucket:"ziua-ela.firebasestorage.app",
-            messagingSenderId:"180855324306", appId:"1:180855324306:web:bb5f4aeabb1ca1847e304b"
-        };
         let firebaseApp,storage,auth,isAuthenticated=false;
-        firebaseApp=firebase.initializeApp(firebaseConfig);storage=firebase.storage();auth=firebase.auth();
+        firebaseApp=firebase.initializeApp(window.firebaseConfig);storage=firebase.storage();auth=firebase.auth();
 
         let mediaRecorder,chunks=[],useFrontCamera=true,currentStream=null;
         let currentMediaType=null,currentMediaData=null,cameraDeschisa=false;
