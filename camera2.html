@@ -177,7 +177,7 @@
         const successMessage=document.getElementById('successMessage'),authStatus=document.getElementById('authStatus');
 
         function getSupportedMimeType(){const t=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'];for(let x of t)if(MediaRecorder.isTypeSupported(x))return x;return '';}
-        function getRecorderOptions(m){const o={};if(m)o.mimeType=m;o.videoBitsPerSecond=3000000;o.audioBitsPerSecond=128000;return o;}
+        function getRecorderOptions(m,lowQuality){const o={};if(m)o.mimeType=m;o.videoBitsPerSecond=lowQuality?500000:1500000;o.audioBitsPerSecond=lowQuality?64000:128000;return o;}
         async function signInAnonymously(){const c=await auth.signInAnonymously();isAuthenticated=true;authStatus.textContent='Conectat';return c.user;}
         function showError(msg){errorMessage.textContent=msg;errorMessage.style.display='block';successMessage.style.display='none';setTimeout(()=>errorMessage.style.display='none',5000);}
         function showSuccess(msg){successMessage.textContent=msg;successMessage.style.display='block';errorMessage.style.display='none';setTimeout(()=>successMessage.style.display='none',5000);}
@@ -203,15 +203,57 @@
                 const url=canvas.toDataURL('image/jpeg',0.85);currentMediaData=dataURLtoBlob(url);currentMediaType='image';showPreview(url,'image');
             }catch(e){showError('Nu s-a putut captura.');}
         }
+        let recordingStartTime=0, qualityTimer=null, switchingToLowQuality=false, lowQualityChunks=[];
+
+        function switchToLowQuality(mimeType){
+            if(!mediaRecorder||mediaRecorder.state!=='recording') return;
+            switchingToLowQuality=true;
+            lowQualityChunks=[];
+            mediaRecorder.stop(); // triggers onstop which won't show preview
+            setTimeout(()=>{
+                // Start new recorder at lower bitrate, appending to existing chunks
+                try{
+                    const lr=new MediaRecorder(currentStream,getRecorderOptions(mimeType,true));
+                    lr.ondataavailable=e=>{if(e.data.size>0){chunks.push(e.data);}};
+                    lr.onstop=()=>{
+                        switchingToLowQuality=false;
+                        const blob=new Blob(chunks,{type:lr.mimeType||'video/webm'});
+                        currentMediaData=blob;currentMediaType='video';
+                        showPreview(URL.createObjectURL(blob),'video');
+                    };
+                    mediaRecorder=lr;
+                    lr.start(1000);
+                    switchingToLowQuality=false;
+                }catch(e){
+                    switchingToLowQuality=false;
+                    // fallback: just show whatever we have
+                    const blob=new Blob(chunks,{type:'video/webm'});
+                    currentMediaData=blob;currentMediaType='video';
+                    showPreview(URL.createObjectURL(blob),'video');
+                }
+            },100);
+        }
+
         function startRecording(){chunks=[];captureButton.style.display='none';switchCameraButton.style.display='none';
-            try{const m=getSupportedMimeType();mediaRecorder=new MediaRecorder(video.srcObject,getRecorderOptions(m));
+            try{const m=getSupportedMimeType();
+                // Start with high quality — we'll know actual duration only when stopped
+                mediaRecorder=new MediaRecorder(video.srcObject,getRecorderOptions(m,false));
                 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-                mediaRecorder.onstop=()=>{const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'});currentMediaData=blob;currentMediaType='video';showPreview(URL.createObjectURL(blob),'video');};
-                mediaRecorder.start();stopRecordButton.style.display='block';recordButton.style.display='none';
-                setTimeout(()=>{if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();},6000);
+                mediaRecorder.onstop=()=>{
+                    const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'});
+                    currentMediaData=blob;currentMediaType='video';
+                    // If this was the high-quality phase and we switched to low-quality,
+                    // lowQualityRecorder handles the rest — don't show preview yet
+                    if(!switchingToLowQuality) showPreview(URL.createObjectURL(blob),'video');
+                };
+                recordingStartTime=Date.now();
+                mediaRecorder.start(1000);stopRecordButton.style.display='block';recordButton.style.display='none';
+                // After 30s, seamlessly restart at lower bitrate
+                qualityTimer=setTimeout(()=>switchToLowQuality(m),30000);
+                // No time limit — user stops manually
             }catch(e){showError('Nu s-a putut înregistra.');captureButton.style.display='block';}
         }
-        function stopRecording(){if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();stopRecordButton.style.display='none';}
+        function stopRecording(){if(qualityTimer){clearTimeout(qualityTimer);qualityTimer=null;}if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();stopRecordButton.style.display='none';}
         function showPreview(src,type){
             video.style.display='none';captureButton.style.display='none';recordButton.style.display='none';
             info.style.display='none';switchCameraButton.style.display='none';
@@ -219,21 +261,65 @@
             else{previewVideo.src=src;previewVideo.style.display='block';previewImage.style.display='none';}
             saveButton.style.display='block';downloadButton.style.display='block';repetatiButton.style.display='block';
         }
-        async function uploadToCloud(blob,filename){
-            const ref=storage.ref().child(`amintiri/${filename}`),task=ref.put(blob);
-            return new Promise((res,rej)=>task.on('state_changed',s=>updateProgress((s.bytesTransferred/s.totalBytes)*100),rej,async()=>{try{const url=await task.snapshot.ref.getDownloadURL();res({downloadURL:url,fullPath:task.snapshot.ref.fullPath});}catch(e){rej(e);}}));
+        // Background upload queue — never blocks the UI
+        const uploadQueue=[];
+        let uploadBadge=null;
+
+        function showUploadBadge(count){
+            if(!uploadBadge){
+                uploadBadge=document.createElement('div');
+                uploadBadge.style.cssText='position:fixed;bottom:80px;right:14px;z-index:100;background:rgba(0,0,0,0.75);color:#fff;font-size:0.75rem;font-weight:600;padding:6px 12px;border-radius:50px;backdrop-filter:blur(8px);letter-spacing:-0.01em;transition:opacity 0.3s;';
+                document.body.appendChild(uploadBadge);
+            }
+            if(count===0){uploadBadge.style.opacity='0';setTimeout(()=>{if(uploadBadge){uploadBadge.remove();uploadBadge=null;}},400);}
+            else{uploadBadge.style.opacity='1';uploadBadge.textContent=`↑ Se salvează (${count})…`;}
         }
-        async function saveToCloud(){
+
+        async function uploadToCloud(blob,filename){
+            const ref=storage.ref().child('amintiri/'+filename),task=ref.put(blob);
+            return new Promise((res,rej)=>task.on('state_changed',null,rej,
+                async()=>{try{const url=await task.snapshot.ref.getDownloadURL();res({downloadURL:url,fullPath:task.snapshot.ref.fullPath});}catch(e){rej(e);}}
+            ));
+        }
+
+        function enqueueUpload(blob,type){
+            const ts=new Date().toISOString().replace(/[:.]/g,'-');
+            const filename=type+'_'+ts+'.'+(type==='image'?'jpg':'webm');
+            uploadQueue.push({blob,type,filename});
+            processQueue();
+        }
+
+        let uploading=false;
+        async function processQueue(){
+            if(uploading||uploadQueue.length===0)return;
+            uploading=true;
+            showUploadBadge(uploadQueue.length);
+            while(uploadQueue.length>0){
+                const job=uploadQueue[0];
+                try{
+                    if(!isAuthenticated)await signInAnonymously();
+                    const result=await uploadToCloud(job.blob,job.filename);
+                    saveMetadataToLocal({id:job.filename,type:job.type,date:new Date().toISOString(),fileName:job.filename,cloudURL:result.downloadURL,cloudPath:result.fullPath});
+                }catch(e){
+                    // Retry once, then save metadata locally without cloud URL
+                    try{
+                        const result=await uploadToCloud(job.blob,job.filename);
+                        saveMetadataToLocal({id:job.filename,type:job.type,date:new Date().toISOString(),fileName:job.filename,cloudURL:result.downloadURL,cloudPath:result.fullPath});
+                    }catch(e2){
+                        saveMetadataToLocal({id:job.filename,type:job.type,date:new Date().toISOString(),isLocal:true});
+                    }
+                }
+                uploadQueue.shift();
+                showUploadBadge(uploadQueue.length);
+            }
+            uploading=false;
+        }
+
+        function saveToCloud(){
             if(!currentMediaData){showError('Nu există date.');return;}
-            if(!isAuthenticated){try{await signInAnonymously();}catch{showError('Offline – salvare locală...');setTimeout(saveToLocal,1000);return;}}
-            try{saveButton.disabled=true;progressContainer.style.display='block';updateProgress(5);
-                const ts=new Date().toISOString().replace(/[:.]/g,'-');
-                const filename=`${currentMediaType}_${ts}.${currentMediaType==='image'?'jpg':'webm'}`;
-                const result=await uploadToCloud(currentMediaData,filename);
-                saveMetadataToLocal({id:filename,type:currentMediaType,date:new Date().toISOString(),fileName:filename,cloudURL:result.downloadURL,cloudPath:result.fullPath});
-                updateProgress(100);setTimeout(()=>{showSuccessMessage();showSuccess('Amintirea a fost salvată!');},400);
-            }catch(e){showError('Eroare cloud. Salvare locală...');setTimeout(saveToLocal,1000);}
-            finally{saveButton.disabled=false;}
+            // Enqueue and immediately return control to user
+            enqueueUpload(currentMediaData,currentMediaType);
+            showSuccessMessage();
         }
         function saveToLocal(){progressContainer.style.display='block';updateProgress(40);
             try{saveMetadataToLocal({id:`${currentMediaType}_${Date.now()}`,type:currentMediaType,date:new Date().toISOString(),isLocal:true});updateProgress(100);setTimeout(()=>{showSuccessMessage();showSuccess('Salvat local!');},400);}
@@ -245,7 +331,7 @@
             if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
             [repetatiButton,saveButton,downloadButton].forEach(b=>b.style.display='none');
             previewImage.style.display='none';previewVideo.style.display='none';progressContainer.style.display='none';
-            info.textContent='Amintirea cu Ela a fost salvată 🎉';info.style.display='block';
+            info.textContent='Amintirea a fost trimisă spre salvare';info.style.display='block';
             const bc=document.getElementById('buttonContainer');bc.innerHTML='';
             const b1=document.createElement('button');b1.textContent='Fă o nouă amintire';b1.className='btn-dark';b1.onclick=resetApp;bc.appendChild(b1);
             const b2=document.createElement('button');b2.textContent='Vezi albumul';b2.className='btn-soft';b2.onclick=()=>window.location.href='gallery.html';bc.appendChild(b2);
@@ -258,7 +344,7 @@
             [previewImage,previewVideo,video].forEach(el=>el.style.display='none');
             progressContainer.style.display='none';errorMessage.style.display='none';successMessage.style.display='none';saveButton.disabled=false;
         }
-        function repeatCapture(){chunks=[];currentMediaData=null;
+        function repeatCapture(){if(qualityTimer){clearTimeout(qualityTimer);qualityTimer=null;}chunks=[];switchingToLowQuality=false;currentMediaData=null;
             if(currentStream){video.srcObject=currentStream;video.style.display='block';}else{activateCamera();}
             [previewImage,previewVideo].forEach(el=>el.style.display='none');
             [saveButton,downloadButton,repetatiButton,stopRecordButton].forEach(b=>b.style.display='none');
